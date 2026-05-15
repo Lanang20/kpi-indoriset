@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard | IndoRiset Grup{% endblock %}
+{% block content %}
+{% load static %}
+    <!-- ======================= kartu ================== -->
+    <div class="kartuBox">
+        <div class="kartu">
+            <div>
+                <div class="numbers">{{ upcoming_project }}</div>
+                <div class="kartuName">Upcoming Project</div>
+            </div>
+
+            <div class="iconBx">
+                <ion-icon name="calendar-outline"></ion-icon>
+            </div>
+        </div>
+
+        <div class="kartu">
+            <div>
+                <div class="numbers">{{ project_diproses }}</div>
+                <div class="kartuName">Project Berjalan</div>
+            </div>
+
+            <div class="iconBx">
+                <ion-icon name="time-outline"></ion-icon>
+            </div>
+        </div>
+
+        <div class="kartu">
+            <div>
+                <div class="numbers">{{ total_project }}</div>
+                <div class="kartuName">Project Selesai</div>
+            </div>
+
+            <div class="iconBx">
+                <ion-icon name="checkmark-circle-outline"></ion-icon>
+            </div>
+        </div>
+
+        <div class="kartu">
+            <div>
+                <div class="numbers">{{ total_pegawai }}</div>
+                <div class="kartuName">Total Pegawai</div>
+            </div>
+
+            <div class="iconBx">
+                <ion-icon name="people-outline"></ion-icon>
+            </div>
+        </div>
+    </div>
+    <!-- ================ Kalender ================= -->
+    <div class="kalender">
+        <div class="cardKalender">
+            <div class="cardHeader">
+                <div class="filter">
+                    {% if user.is_superuser %}
+                    <select id="filter-perusahaan" class="form-select mb-4">
+                        <option value="" selected>Semua Perusahaan</option>
+                        {% for perusahaan in perusahaan_list %}
+                        <option value="{{ perusahaan.id }}">
+                            {{ perusahaan.nama }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    {% endif %}
+                    <select id="filter-kategori" class="form-select mb-4">
+                        <option value="project" selected>Project</option>
+                        <option value="subproject">Subproject</option>
+                    </select>
+                </div>
+                <div id='calendar'></div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,232 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Poppins&display=swap');
+body {
+    font-family: 'Poppins', sans-serif;
+    padding-top: 120px;
+}
+
+/* CSS Untuk Navbar */
+.custom-nav {
+    background-color: transparent;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 35px 70px;
+    z-index: 1000;
+    transition: 0.5s;
+}
+.custom-nav.sticky-navbar {
+    background-color: #ffffff;
+    padding: 10px 100px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+.custom-nav .navbar-brand img {
+    width: 30px;
+    height: 30px;
+    margin-top: -7px;
+}
+.custom-nav .navbar-brand span {
+    font-family: 'Caveat Brush', cursive;
+    color: red;
+    font-weight: 400;
+    font-size: 38px;
+    margin-left: 0.4em;
+}
+.custom-nav #navbarNav .navbar-nav .nav-item .nav-link {
+    color: rgba(0, 0, 0, 0.70);
+    font-weight: 400;
+    font-size: 17px;
+    margin-left: 2.4em;
+    transition: 0.3s color ease;
+}
+.custom-nav #navbarNav .navbar-nav .nav-item .nav-link:hover {
+    display: inline-block;
+    color: white;
+    background-color: red;
+    border-radius: 0.5em;
+    padding: 0.5em 1em;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: 0.5s ease;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.3);
+}
+
+/* CSS untuk section Home */
+img#gambar-login {
+    margin-left: 50px;
+}
+.btn-modal-login {
+    display: inline-block;
+    color: white;
+    background-color: red;
+    border-radius: .4em;
+    padding: 0.5em 2em;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: 0.5s ease;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.3);
+}
+.btn-modal-login:hover {
+    background-color: red;
+    border-color: red;
+}
+.btn-modal-cancel {
+    color: red;
+    border: 1px solid red;
+    padding: 0.5em 2em;
+    background-color: transparent;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+.btn-modal-cancel:hover {
+    background-color: red;
+    border-color: red;
+    color: #ffffff;
+}
+#Home {
+    margin-bottom: 50px;
+}
+#Home p {
+    font-size: 15px;
+    text-align: justify;
+}
+#Home h1 {
+    color: red;
+    font-size: 30px;
+}
+.btn-cancel {
+    display: inline-block;
+    color: red;
+    border: 1px solid red;
+    background-color: transparent;
+    border-radius: .4em;
+    padding: 0.5em 2em;
+    text-decoration: none;
+    transition: 0.5s ease;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+#Home .btn-login {
+    font-size: 15px;
+    color: red;
+    border: 1px solid red;
+    padding: 0.5em 2em;
+    background-color: transparent;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+#Home .btn-login:hover {
+    background-color: red;
+    border-color: red;
+    color: #ffffff;
+}
+
+/* CSS untuk section Alur */
+#Alur {
+    margin-bottom: 50px;
+}
+#Alur h1 {
+    text-align: center;
+    font-size: 30px;
+}
+#Alur p {
+    font-size: 15px;
+    text-align: justify;
+}
+.teladan {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+.teladan::before {
+    content: '';
+    position: absolute;
+    width: 4px;
+    background-color: #dc3545;
+    top: 0;
+    bottom: 0;
+    left: 25px;
+    margin-left: -2px;
+}
+.teladan-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    position: relative;
+}
+.teladan-icon {
+    flex: 0 0 50px;
+    height: 50px;
+    background: #f8d7da;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    color: #dc3545;
+    margin-right: 20px;
+    position: relative;
+    z-index: 1;
+}
+.teladan-number {
+    position: absolute;
+    top: -15px;
+    left: -15px;
+    background: #dc3545;
+    color: #fff;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+}
+.teladan-content {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 1;
+}
+.teladan-content h3 {
+    margin-top: 0;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    body {
+        padding-top: 80px;
+    }
+    #Home img {
+        margin-left: 35px;
+    }
+    .custom-nav {
+        background-color: #ffffff;
+        padding: 8px 10px;
+    }
+    .custom-nav.sticky-navbar {
+        background-color: #ffffff;
+        padding: 8px 10px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+    .custom-nav .navbar-brand span {
+        font-size: 30px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    #Home img {
+        margin-left: 120px;
+    }
+    .col-md-6 {
+        width: 100%;
+    }
+    img#gambar-login {
+        width: 300px;
+        margin-left: 70px;
+    }
+    .custom-nav {
+        background-color: #ffffff;
+        padding: 8px 10px;
+    }
+}

@@ -1,0 +1,457 @@
+{% extends 'base.html' %}
+{% block title %}Kegiatan | IndoRiset Grup{% endblock %}
+{% block content %}
+{% load static %}
+<div class="kalender">
+    <div class="cardKalender">
+        <div class="cardHeader">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <h2 class="mb-0">Kalender Kegiatan</h2>
+                {% if user.role == 'manager' %}
+                <button
+                    class="btn btn-danger"
+                    onclick="openTambahModal()">
+                    <i class="fas fa-plus me-2"></i>Tambah Kegiatan
+                </button>
+                {% endif %}
+            </div>
+            <div class="filter mb-3">
+                {% if user.is_superuser %}
+                <select id="filter-perusahaan-kegiatan" class="form-select mb-2">
+                    <option value="">Semua Perusahaan</option>
+                    {% for p in perusahaan_list %}
+                    <option value="{{ p.id }}">{{ p.nama }}</option>
+                    {% endfor %}
+                </select>
+                {% endif %}
+            </div>
+            <div id="calendar-kegiatan"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== MODAL TAMBAH ===================== -->
+<div class="modal fade" id="TambahKegiatanModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tambah Kegiatan</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="TambahKegiatanForm">
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label class="form-label">Nama Agenda</label>
+                            <input type="text" name="nama"
+                                class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Tanggal & Jam Mulai</label>
+                            <div class="d-flex gap-2">
+                                <input type="date" name="tanggal_mulai"
+                                    class="form-control" required>
+                                <input type="time" name="jam_mulai"
+                                    class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Tanggal & Jam Akhir</label>
+                            <div class="d-flex gap-2">
+                                <input type="date" name="tanggal_akhir"
+                                    class="form-control" required>
+                                <input type="time" name="jam_akhir"
+                                    class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Pegawai</label>
+                        <div class="border rounded p-2"
+                            style="height:140px; overflow-y:scroll; width:100%;">
+                            {% for p in pegawai_list %}
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                    type="checkbox"
+                                    name="pegawai"
+                                    value="{{ p.id }}"
+                                    id="tambah_pegawai_{{ p.id }}">
+                                <label class="form-check-label"
+                                    for="tambah_pegawai_{{ p.id }}">
+                                    {{ p.nama }}
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Deskripsi</label>
+                        <textarea name="deskripsi"
+                            class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="modal-footer px-0 pb-0">
+                        <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">Tutup</button>
+                        <button type="submit"
+                            class="btn btn-danger">Tambah</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== MODAL EDIT ===================== -->
+<div class="modal fade" id="EditKegiatanModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Kegiatan</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="EditKegiatanForm">
+                    <input type="hidden" id="edit_id" name="id">
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label class="form-label">Nama Agenda</label>
+                            <input type="text" id="edit_nama" name="nama"
+                                class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Tanggal & Jam Mulai</label>
+                            <div class="d-flex gap-2">
+                                <input type="date" id="edit_tanggal_mulai"
+                                    name="tanggal_mulai" class="form-control" required>
+                                <input type="time" id="edit_jam_mulai"
+                                    name="jam_mulai" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Tanggal & Jam Akhir</label>
+                            <div class="d-flex gap-2">
+                                <input type="date" id="edit_tanggal_akhir"
+                                    name="tanggal_akhir" class="form-control" required>
+                                <input type="time" id="edit_jam_akhir"
+                                    name="jam_akhir" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Pegawai</label>
+                        <div class="border rounded p-2"
+                            style="height:160px; overflow-y:scroll; width:100%;">
+                            {% for p in pegawai_list %}
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                    type="checkbox"
+                                    name="pegawai"
+                                    value="{{ p.id }}"
+                                    id="edit_pegawai_{{ p.id }}">
+                                <label class="form-check-label"
+                                    for="edit_pegawai_{{ p.id }}">
+                                    {{ p.nama }}
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Deskripsi</label>
+                        <textarea id="edit_deskripsi" name="deskripsi"
+                            class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="modal-footer px-0 pb-0">
+                        <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">Tutup</button>
+                        <button type="submit"
+                            class="btn btn-danger">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    // ── Inisialisasi Kalender ──────────────────────────────────
+    const calendarEl = document.getElementById('calendar-kegiatan');
+    const filterPerusahaan = document.getElementById('filter-perusahaan-kegiatan');
+    const isManager = "{{ user.role }}" === "manager";
+    const isSuperuser = {{ user.is_superuser|yesno:"true,false" }};
+    const canEdit = isManager;
+
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,dayGridWeek,listMonth'
+        },
+        dayMaxEventRows: true,
+        events: function (fetchInfo, successCallback, failureCallback) {
+            const params = new URLSearchParams();
+            if (filterPerusahaan && filterPerusahaan.value) {
+                params.append('perusahaan_id', filterPerusahaan.value);
+            }
+            fetch("{% url 'calendar_events_kegiatan' %}?" + params.toString())
+                .then(r => r.json())
+                .then(events => {
+                    events.forEach(e => { e.color = '#c0392b'; });
+                    successCallback(events);
+                })
+                .catch(failureCallback);
+        },
+        eventClick: function (info) {
+            const props = info.event.extendedProps;
+            const eventId = info.event.id;
+            const pegawaiList = props.pegawai && props.pegawai.length
+                ? props.pegawai.length === 1
+                    ? props.pegawai[0] + '.'
+                    : props.pegawai.slice(0, -1).join(', ') + ', ' + props.pegawai[props.pegawai.length - 1] + '.'
+                : '-';
+
+            const actionButtons = canEdit ? `
+                <hr>
+                <div class="d-flex justify-content-center gap-2 mt-2">
+                    <button class="btn btn-sm btn-primary" id="btn-edit-kegiatan">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button class="btn btn-sm btn-danger" id="btn-hapus-kegiatan">
+                        <i class="fas fa-trash"></i> Hapus
+                    </button>
+                </div>` : '';
+
+            Swal.fire({
+                title: info.event.title,
+                html: `
+                    <div style="text-align:left;font-size:15px;">
+                        <p><strong>Deskripsi:</strong><br>
+                            <span style="text-align:justify;display:block;">
+                                ${props.deskripsi || '-'}
+                            </span>
+                        </p>
+                        <p><strong>Pegawai:</strong><br> ${pegawaiList}</p>
+                        ${actionButtons}
+                    </div>`,
+                confirmButtonColor: 'red',
+                showConfirmButton: true,
+                confirmButtonText: 'Tutup',
+                didOpen: () => {
+                    const btnEdit = document.getElementById('btn-edit-kegiatan');
+                    const btnHapus = document.getElementById('btn-hapus-kegiatan');
+
+                    if (btnEdit) {
+                        btnEdit.addEventListener('click', function () {
+                            Swal.close();
+                            setTimeout(() => openEditModal(eventId), 300);
+                        });
+                    }
+
+                    if (btnHapus) {
+                        btnHapus.addEventListener('click', function () {
+                            Swal.close();
+                            setTimeout(() => confirmDelete(eventId), 300);
+                        });
+                    }
+                }
+            });
+        },
+        displayEventTime: false,
+    });
+    calendar.render();
+
+    if (filterPerusahaan) {
+        filterPerusahaan.addEventListener('change', function () {
+            calendar.refetchEvents();
+            this.blur();
+        });
+    }
+
+    // ── Tambah Kegiatan ───────────────────────────────────────
+    document.getElementById('TambahKegiatanForm')
+        .addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            fetch("{% url 'tambah_kegiatan' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(r => r.json().then(d => ({ status: r.status, json: d })))
+            .then(data => {
+                if (data.status === 200) {
+                    Swal.fire({
+                        title: 'Sukses!',
+                        text: data.json.message,
+                        icon: 'success',
+                        confirmButtonColor: 'red'
+                    }).then(() => {
+                        this.reset();
+                        bootstrap.Modal.getInstance(
+                            document.getElementById('TambahKegiatanModal')
+                        ).hide();
+                        calendar.refetchEvents();
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Gagal!',
+                        text: data.json.message,
+                        icon: 'error',
+                        confirmButtonColor: 'red',
+                        iconColor: 'red'
+                    });
+                }
+            });
+        });
+
+    // ── Edit Kegiatan ─────────────────────────────────────────
+    document.getElementById('EditKegiatanForm')
+        .addEventListener('submit', function (e) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Konfirmasi Edit',
+                text: 'Apakah Anda yakin ingin menyimpan perubahan?',
+                icon: 'warning',
+                iconColor: 'red',
+                showCancelButton: true,
+                confirmButtonColor: 'red',
+                confirmButtonText: 'Ya, Simpan!',
+                cancelButtonText: 'Batal',
+            }).then(result => {
+                if (!result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Dibatalkan!',
+                        text: 'Perubahan tidak disimpan.',
+                        icon: 'error',
+                        confirmButtonColor: 'red',
+                        iconColor: 'red'
+                    });
+                    return;
+                }
+                const formData = new FormData(this);
+                fetch("{% url 'edit_kegiatan' %}", {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+                })
+                .then(r => r.json().then(d => ({ status: r.status, json: d })))
+                .then(data => {
+                    if (data.status === 200) {
+                        Swal.fire({
+                            title: 'Disimpan!',
+                            text: data.json.message,
+                            icon: 'success',
+                            confirmButtonColor: 'red'
+                        }).then(() => {
+                            bootstrap.Modal.getInstance(
+                                document.getElementById('EditKegiatanModal')
+                            ).hide();
+                            calendar.refetchEvents();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Gagal!',
+                            text: data.json.message,
+                            icon: 'error',
+                            confirmButtonColor: 'red',
+                            iconColor: 'red'
+                        });
+                    }
+                });
+            });
+        });
+});
+
+// ── Buka Modal Tambah ──────────────────────────────────────
+function openTambahModal() {
+    document.getElementById('TambahKegiatanForm').reset();
+    new bootstrap.Modal(
+        document.getElementById('TambahKegiatanModal')
+    ).show();
+}
+
+// ── Buka Modal Edit ────────────────────────────────────────
+function openEditModal(id) {
+    fetch(`/kegiatan/detail/${id}/`)
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('edit_id').value = data.id;
+            document.getElementById('edit_nama').value = data.nama;
+            document.getElementById('edit_deskripsi').value = data.deskripsi;
+            document.getElementById('edit_tanggal_mulai').value = data.tanggal_mulai;
+            document.getElementById('edit_jam_mulai').value = data.jam_mulai;
+            document.getElementById('edit_tanggal_akhir').value = data.tanggal_akhir;
+            document.getElementById('edit_jam_akhir').value = data.jam_akhir;
+
+            // Set checkbox pegawai
+            document.querySelectorAll(
+                '#EditKegiatanModal input[name="pegawai"]'
+            ).forEach(cb => {
+                cb.checked = data.pegawai.includes(parseInt(cb.value));
+            });
+
+            new bootstrap.Modal(
+                document.getElementById('EditKegiatanModal')
+            ).show();
+        });
+}
+
+// ── Hapus Kegiatan ─────────────────────────────────────────
+function confirmDelete(id) {
+    Swal.fire({
+        title: 'Apakah Anda Yakin?',
+        text: 'Anda tidak bisa memulihkan data ini!',
+        icon: 'warning',
+        iconColor: 'red',
+        showCancelButton: true,
+        confirmButtonColor: 'red',
+        confirmButtonText: 'Ya, Hapus!',
+        cancelButtonText: 'Tidak, Batal!',
+        reverseButtons: true
+    }).then(result => {
+        if (result.isConfirmed) {
+            fetch(`/kegiatan/hapus/${id}/`, {
+                method: 'DELETE',
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+            }).then(r => {
+                if (r.ok) {
+                    Swal.fire({
+                        title: 'Dihapus!',
+                        text: 'Kegiatan telah dihapus.',
+                        icon: 'success',
+                        confirmButtonColor: 'red'
+                    }).then(() => location.reload());
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Gagal menghapus kegiatan.',
+                        icon: 'error',
+                        confirmButtonColor: 'red',
+                        iconColor: 'red'
+                    });
+                }
+            });
+        } else {
+            Swal.fire({
+                title: 'Dibatalkan',
+                text: 'Data kegiatan Anda tetap aman :)',
+                icon: 'error',
+                confirmButtonColor: 'red',
+                iconColor: 'red'
+            });
+        }
+    });
+}
+</script>
+{% endblock %}

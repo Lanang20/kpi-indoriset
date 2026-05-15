@@ -1,0 +1,499 @@
+{% extends 'base.html' %}
+{% block title %}KPI | KPI IndoRiset{% endblock %}
+{% block content %}
+{% load static %}
+
+<div class="kpi">
+    <div class="cardKPI">
+        <div class="cardHeader">
+            {% if user.role == 'manager' or user.is_superuser %}
+            <!-- ===== GRAFIK PROJECT ===== -->
+            <h2 class="text-center mb-3">Grafik Total Project</h2>
+            {% if user.is_superuser %}
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <select id="filter-perusahaan-grafik" class="form-select">
+                        <option value="">Semua Perusahaan</option>
+                        {% for p in perusahaan_list %}
+                        <option value="{{ p.id }}">{{ p.nama }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            {% endif %}
+            <figure class="highcharts-figure">
+                <div id="grafik-project" style="height:400px;"></div>
+            </figure>
+            {% endif %}
+            <!-- ===== BATAS GRAFIK ===== -->
+            {% if user.role == 'staff' %}
+            <!-- ===== GRAFIK BERDASARKAN SUBPROJECT PEGAWAI ===== -->
+            <h2 class="text-center mb-3">Grafik Total Project Anda</h2>
+            <figure class="highcharts-figure">
+                <div id="grafik-subproject" style="height:400px;"></div>
+            </figure>
+            {% endif %}
+            <!-- ===== BATAS GRAFIK ===== -->
+            {% if not user.is_superuser %}
+            <h2 class="text-center mb-3">Data KPI Anda</h2>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label>Tanggal Mulai</label>
+                    <input type="date" id="self_start" class="form-control mb-3">
+                </div>
+                <div class="col-md-4">
+                    <label>Tanggal Akhir</label>
+                    <input type="date" id="self_end" class="form-control mb-3">
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button class="btn btn-danger w-100 mb-3" onclick="lihatKpiSendiri()">
+                        Tampilkan KPI
+                    </button>
+                </div>
+            </div>
+            <div id="kpiResult" class="mb-4"></div>
+            {% endif %}
+            {% if user.role != "staff" %}
+            <h2 class="text-center">KPI Pegawai</h2>
+                {% if user.is_superuser %}
+                <div class="filter">
+                    <select id="filter-perusahaan" class="form-select mb-3">
+                        <option value="">Semua Perusahaan</option>
+                        {% for p in perusahaan_list %}
+                        <option value="{{ p.id }}">{{ p.nama }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="filter-jabatan" class="form-select mb-3">
+                        <option value="">Semua Jabatan</option>
+                        {% for j in jabatan_list %}
+                        <option value="{{ j.id }}">{{ j.nama }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% endif %}
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered table-sm" id="myTable">
+                    <thead>
+                        <tr>
+                            <th style="text-align: center;">No</th>
+                            <th style="text-align: center;">Nama</th>
+                            <th style="text-align: center;">Email</th>
+                            {% if user.is_superuser %}
+                                <th style="text-align: center;">Perusahaan</th>
+                            {% endif %}
+                            <th style="text-align: center;">Jabatan</th>
+                            <th style="text-align: center;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pegawai in pegawai_list %}
+                        <tr 
+                            data-perusahaan="{{ pegawai.perusahaan.id }}"
+                            data-jabatan="{{ pegawai.jabatan.id }}"
+                        >
+                            <td style="text-align: center;">{{ forloop.counter }}</td>
+                            <td>{{ pegawai.nama }}</td>
+                            <td>{{ pegawai.email }}</td>
+                            {% if user.is_superuser %}
+                                <td>{{ pegawai.perusahaan }}</td>
+                            {% endif %}
+                            <td>{{ pegawai.jabatan }}</td>
+                            <td class="text-center">
+                                <button class="btn btn-danger btn-sm"
+                                    onclick="openModalKPI({{ pegawai.id }})">
+                                    <i class="fas fa-eye"></i> Lihat KPI
+                                </button>
+                                <a href="{% url 'grafik_pegawai' pegawai.id %}"
+                                    target="_blank"
+                                    class="btn btn-primary btn-sm">
+                                    <i class="fa-solid fa-chart-simple"></i> Lihat Grafik
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal Pilih Periode KPI -->
+<div class="modal fade" id="ModalKPI" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Pilih Periode KPI</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="kpi_pegawai_id">
+
+                <div class="mb-3">
+                    <label>Tanggal Mulai</label>
+                    <input type="date" id="modal_start" class="form-control">
+                </div>
+
+                <div class="mb-3">
+                    <label>Tanggal Akhir</label>
+                    <input type="date" id="modal_end" class="form-control">
+                </div>
+
+                <button class="btn btn-danger w-100" onclick="prosesKPI()">
+                    Tampilkan KPI
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+
+function formatTanggalIndonesia(tanggal){
+    if(!tanggal) return "-";
+    const bulanIndo = [
+        "Januari","Februari","Maret","April","Mei","Juni",
+        "Juli","Agustus","September","Oktober","November","Desember"
+    ];
+    const tgl = new Date(tanggal);
+    const hari = tgl.getDate();
+    const bulan = bulanIndo[tgl.getMonth()];
+    const tahun = tgl.getFullYear();
+    return `${hari} ${bulan} ${tahun}`;
+}
+
+function lihatKPI(id){
+    fetch(`/kpi/${id}/`)
+    .then(res => res.json())
+    .then(data => {
+        let html = `<div style="text-align:left;font-size:15px">`;
+        if(data.role === "staff"){
+            html += `
+                <p>
+                    <strong>Total Tugas:</strong> ${data.total_tugas}
+                    <strong>Tepat Waktu:</strong> ${data.tepat_waktu}
+                    <strong>Terlambat:</strong> ${data.terlambat}
+                </p>
+            `;
+        }else{
+            html += `
+                <p>
+                    <strong>Total Project:</strong> ${data.total_project}
+                    <strong>Project Selesai:</strong> ${data.project_selesai}
+                    <strong>Project Terlambat:</strong> ${data.project_terlambat}
+                </p>
+                <p>
+                    <strong>Total Review:</strong> ${data.total_review}
+                    <strong>Review Tepat Waktu:</strong> ${data.review_tepat_waktu}
+                    <strong>Review Terlambat:</strong> ${data.review_terlambat}
+                </p>
+            `;
+        }
+        html += `</div>`;
+        Swal.fire({
+            title: "KPI - " + data.nama,
+            html: html,
+            width: 600,
+            showCancelButton: true,
+            confirmButtonText: "Cetak PDF",
+            cancelButtonText: "Tutup",
+            confirmButtonColor: "red"
+        });
+    });
+}
+
+const filterPerusahaan = document.getElementById('filter-perusahaan');
+const filterJabatan = document.getElementById('filter-jabatan');
+
+function applyFilter(){
+    const perusahaanVal = filterPerusahaan ? filterPerusahaan.value : "";
+    const jabatanVal = filterJabatan ? filterJabatan.value : "";
+
+    document.querySelectorAll('#myTable tbody tr').forEach(row => {
+        const rowPerusahaan = row.dataset.perusahaan;
+        const rowJabatan = row.dataset.jabatan;
+
+        let show = true;
+
+        if(perusahaanVal && rowPerusahaan !== perusahaanVal){
+            show = false;
+        }
+
+        if(jabatanVal && rowJabatan !== jabatanVal){
+            show = false;
+        }
+
+        row.style.display = show ? "" : "none";
+    });
+}
+
+// Event listener
+if(filterPerusahaan){
+    filterPerusahaan.addEventListener('change', applyFilter);
+}
+
+if(filterJabatan){
+    filterJabatan.addEventListener('change', applyFilter);
+}
+
+function openModalKPI(id){
+    document.getElementById('kpi_pegawai_id').value = id;
+
+    // RESET INPUT TANGGAL
+    document.getElementById('modal_start').value = "";
+    document.getElementById('modal_end').value = "";
+
+    const modal = new bootstrap.Modal(document.getElementById('ModalKPI'));
+    modal.show();
+}
+
+function prosesKPI(){
+    const id = document.getElementById('kpi_pegawai_id').value;
+    const start = document.getElementById('modal_start').value;
+    const end = document.getElementById('modal_end').value;
+    const startFormatted = formatTanggalIndonesia(start);
+    const endFormatted = formatTanggalIndonesia(end);
+    let url = `/kpi/${id}/?`;
+    if(start) url += `start=${start}&`;
+    if(end) url += `end=${end}`;
+    fetch(url)
+    .then(res => res.json())
+    .then(data => {
+        let html = `<div style="text-align:left;font-size:15px">`;
+        html += `<p><strong>Periode:</strong> ${startFormatted} s/d ${endFormatted}</p>`;
+        if(data.role === "staff"){
+            html += `
+                <p style="margin-left: 0; margin-bottom: 0;"><strong>Total Tugas:</strong> ${data.total_tugas}</p>
+                <p style="margin-left: 0; margin-bottom: 0;"><strong>Tepat Waktu:</strong> ${data.tepat_waktu}</p>
+                <p style="margin-left: 0; margin-bottom: 0;"><strong>Terlambat:</strong> ${data.terlambat}</p>
+                <hr>
+                <p style="margin-left: 0; margin-bottom: 0;"><strong>Persentase Tepat Waktu per Project:</strong></p>
+            `;
+            if(data.persentase_per_project.length > 0){
+                data.persentase_per_project.forEach(p => {
+                    html += `
+                        <p style="margin-left: 0; margin-bottom: 2px;">
+                            <strong>${p.project}:</strong> ${p.tepat_waktu}/${p.total} tugas (${p.persen}%)
+                        </p>
+                    `;
+                });
+            } else {
+                html += `<p style="margin-left: 0; margin-bottom: 0;" class="text-muted">Belum ada data tugas.</p>`;
+            }
+        } else {
+            html += `
+                <p style="margin-left: 0; margin-bottom: 0;"><strong>Total Project:</strong> ${data.total_project}</p>
+                <p style="margin-left: 0; margin-bottom: 0;"><strong>Project Selesai:</strong> ${data.project_selesai}</p>
+                <p style="margin-left: 0; margin-bottom: 0;"><strong>Project Terlambat:</strong> ${data.project_terlambat}</p>
+                <hr>
+                <p style="margin-left: 0; margin-bottom: 0;"><strong>Total Review:</strong> ${data.total_review}</p>
+                <p style="margin-left: 0; margin-bottom: 0;"><strong>Review Tepat Waktu:</strong> ${data.review_tepat_waktu}</p>
+                <p style="margin-left: 0; margin-bottom: 0;"><strong>Review Terlambat:</strong> ${data.review_terlambat}</p>
+                <p style="margin-left: 0; margin-bottom: 0;"><strong>Persentase Review Tepat Waktu:</strong> ${data.persen_review_tepat_waktu}%</p>
+            `;
+        }
+        html += `</div>`;
+        Swal.fire({
+            title: "KPI - " + data.nama,
+            html: html,
+            width: 600,
+            showCancelButton: true,
+            confirmButtonText: "Cetak PDF",
+            cancelButtonText: "Tutup",
+            confirmButtonColor: "red"
+        }).then((result) => {
+            if(result.isConfirmed){
+                let url = `/kpi/cetak/${id}/?`;
+                if(start) url += `start=${start}&`;
+                if(end) url += `end=${end}`;
+
+                // trigger download
+                window.open(url, '_blank');
+            }
+        });
+
+        // tutup modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('ModalKPI'));
+        modal.hide();
+    });
+}
+
+function lihatKpiSendiri(){
+    const start = document.getElementById('self_start').value;
+    const end = document.getElementById('self_end').value;
+    const startFormatted = formatTanggalIndonesia(start);
+    const endFormatted = formatTanggalIndonesia(end);
+    let url = `/kpi/{{ user.id }}/?`;
+    if(start) url += `start=${start}&`;
+    if(end) url += `end=${end}`;
+    fetch(url)
+    .then(res => res.json())
+    .then(data => {
+        let html = `<div class="alert alert-danger">`;
+        html += `<p style="margin-left: 0;"><strong>Periode:</strong> ${startFormatted} s/d ${endFormatted}</p>`;
+        if(data.role === "staff"){
+            html += `
+                <p style="margin-left: 0; margin-bottom: 0;"><strong>Total Tugas:</strong> ${data.total_tugas}</p>
+                <p style="margin-left: 0; margin-bottom: 0;"><strong>Tepat Waktu:</strong> ${data.tepat_waktu}</p>
+                <p style="margin-left: 0; margin-bottom: 0;"><strong>Terlambat:</strong> ${data.terlambat}</p>
+                <hr>
+                <p style="margin-left: 0; margin-bottom: 0;"><strong>Persentase Tepat Waktu per Project:</strong></p>
+            `;
+            if(data.persentase_per_project.length > 0){
+                data.persentase_per_project.forEach(p => {
+                    html += `
+                        <p style="margin-left: 0; margin-bottom: 2px;">
+                            <strong>${p.project}:</strong> ${p.tepat_waktu}/${p.total} tugas (${p.persen}%)
+                        </p>
+                    `;
+                });
+            } else {
+                html += `<p style="margin-left: 0; margin-bottom: 0;" class="text-muted">Belum ada data tugas.</p>`;
+            }
+        } else {
+            html += `
+                <p style="margin-left: 0; margin-bottom: 0;"><strong>Total Project:</strong> ${data.total_project}</p>
+                <p style="margin-left: 0; margin-bottom: 0;"><strong>Project Selesai:</strong> ${data.project_selesai}</p>
+                <p style="margin-left: 0; margin-bottom: 0;"><strong>Project Terlambat:</strong> ${data.project_terlambat}</p>
+                <hr>
+                <p style="margin-left: 0; margin-bottom: 0;"><strong>Total Review:</strong> ${data.total_review}</p>
+                <p style="margin-left: 0; margin-bottom: 0;"><strong>Review Tepat Waktu:</strong> ${data.review_tepat_waktu}</p>
+                <p style="margin-left: 0; margin-bottom: 0;"><strong>Review Terlambat:</strong> ${data.review_terlambat}</p>
+                <p style="margin-left: 0; margin-bottom: 0;"><strong>Persentase Review Tepat Waktu:</strong> ${data.persen_review_tepat_waktu}%</p>
+            `;
+        }
+
+        // 🔥 tombol cetak PDF
+        html += `
+            <div class="mt-3 text-start">
+                <button class="btn btn-danger btn-sm" onclick="cetakPDFSendiri('${start}','${end}')">
+                    <i class="fas fa-file-pdf"></i> Cetak PDF
+                </button>
+            </div>
+        `;
+        html += `</div>`;
+        document.getElementById('kpiResult').innerHTML = html;
+    });
+}
+
+function cetakPDFSendiri(start, end){
+    let url = `/kpi/pdf/{{ user.id }}/?`;
+
+    if(start) url += `start=${start}&`;
+    if(end) url += `end=${end}`;
+
+    window.open(url, "_blank");
+}
+
+// reset modal saat ditutup
+document.getElementById('ModalKPI').addEventListener('hidden.bs.modal', function () {
+    document.getElementById('modal_start').value = "";
+    document.getElementById('modal_end').value = "";
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/highcharts@latest/highcharts.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highcharts@latest/modules/drilldown.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highcharts@latest/modules/exporting.js"></script>
+<script>
+    {% if user.role == 'manager' or user.is_superuser %}
+    const dataTahunanSemua = {{ data_tahunan_json|safe }};
+    const drilldownSemua = {{ drilldown_json|safe }};
+    const grafikPerPerusahaan = {{ grafik_per_perusahaan_json|safe }};
+
+    function renderGrafikProject(dataTahunan, drilldownData) {
+        Highcharts.chart('grafik-project', {
+            chart: { type: 'column' },
+            accessibility: { enabled: false },
+            title: { text: 'Total Project per Tahun' },
+            subtitle: { text: 'Klik kolom tahun untuk melihat detail per bulan' },
+            xAxis: { type: 'category' },
+            yAxis: {
+                title: { text: 'Jumlah Project' },
+                allowDecimals: false
+            },
+            legend: { enabled: false },
+            plotOptions: {
+                series: {
+                    borderWidth: 0,
+                    dataLabels: { enabled: true, format: '{point.y}' }
+                }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+                pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y} project</b><br/>'
+            },
+            colors: ['#dc3545'],
+            series: [{
+                name: 'Tahun',
+                colorByPoint: false,
+                color: '#dc3545',
+                data: dataTahunan
+            }],
+            drilldown: {
+                breadcrumbs: { position: { align: 'right' } },
+                series: drilldownData
+            }
+        });
+    }
+
+    // Render awal dengan semua data
+    renderGrafikProject(dataTahunanSemua, drilldownSemua);
+
+    // Filter perusahaan (hanya superuser)
+    const filterGrafik = document.getElementById('filter-perusahaan-grafik');
+    if (filterGrafik) {
+        filterGrafik.addEventListener('change', function () {
+            const val = this.value;
+            if (val && grafikPerPerusahaan[val]) {
+                renderGrafikProject(
+                    grafikPerPerusahaan[val].tahunan,
+                    grafikPerPerusahaan[val].drilldown
+                );
+            } else {
+                renderGrafikProject(dataTahunanSemua, drilldownSemua);
+            }
+        });
+    }
+    {% endif %}
+
+    {% if user.role == 'staff' %}
+    Highcharts.chart('grafik-subproject', {
+        chart: { type: 'column' },
+        accessibility: { enabled: false },
+        title: { text: 'Total Project per Tahun' },
+        subtitle: { text: 'Klik kolom tahun untuk melihat detail per bulan' },
+        xAxis: { type: 'category' },
+        yAxis: {
+            title: { text: 'Jumlah Project' },
+            allowDecimals: false
+        },
+        legend: { enabled: false },
+        plotOptions: {
+            series: {
+                borderWidth: 0,
+                dataLabels: { enabled: true, format: '{point.y}' }
+            }
+        },
+        tooltip: {
+            headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+            pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y} project</b><br/>'
+        },
+        colors: ['#dc3545'],
+        series: [{
+            name: 'Tahun',
+            colorByPoint: false,
+            color: '#dc3545',
+            data: {{ data_tahunan_sub_json|safe }}
+        }],
+        drilldown: {
+            breadcrumbs: { position: { align: 'right' } },
+            series: {{ drilldown_sub_json|safe }}
+        }
+    });
+    {% endif %}
+</script>
+
+{% endblock %}

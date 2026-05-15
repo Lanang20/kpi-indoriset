@@ -1,0 +1,735 @@
+/* =========== Google Fonts ============ */
+@import url("https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Poppins&display=swap');
+
+/* =============== Globals ============== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Ubuntu", sans-serif;
+}
+:root {
+    --blue: #3843D6;
+    --white: #fff;
+    --black1: #212529;
+    --black2: #999;
+}
+body {
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+.pembungkus {
+    position: relative;
+    width: 100%;
+}
+.btn-edit {
+    margin-top: 5px;
+}
+.btn-hapus {
+    margin-top: 5px;
+}
+
+/* =============== Navigation ================ */
+.navigation {
+    position: fixed;
+    width: 300px;
+    height: 100%;
+    background: var(--black1);
+    border-left: 10px solid var(--black1);
+    transition: 0.5s;
+    overflow: hidden;
+}
+.navigation.active {
+    width: 80px;
+}
+
+.navigation ul {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 0;
+}
+
+.navigation ul li {
+    position: relative;
+    width: 100%;
+    list-style: none;
+    border-top-left-radius: 30px;
+    border-bottom-left-radius: 30px;
+}
+
+.navigation ul li:hover,
+.navigation ul li.hovered {
+    background-color: var(--white);
+}
+
+.navigation ul li:nth-child(1) {
+    margin-bottom: 40px;
+    pointer-events: none;
+}
+
+.navigation ul li a {
+    position: relative;
+    display: block;
+    width: 100%;
+    display: flex;
+    text-decoration: none;
+    color: var(--white);
+}
+.navigation ul li:hover a,
+.navigation ul li.hovered a {
+    color: var(--black1);
+}
+
+.navigation ul li a .icon {
+    position: relative;
+    display: block;
+    min-width: 60px;
+    height: 60px;
+    line-height: 75px;
+    text-align: center;
+}
+.navigation ul li a .icon ion-icon {
+    font-size: 1.75rem;
+}
+
+.navigation ul li a .title {
+    position: relative;
+    display: block;
+    padding: 0 10px;
+    height: 60px;
+    line-height: 60px;
+    text-align: start;
+    white-space: nowrap;
+}
+.navigation ul li a .titleMain {
+    font-family: 'Caveat Brush', cursive;
+    font-size: 30px;
+    position: relative;
+    display: block;
+    padding: 0 10px;
+    height: 60px;
+    line-height: 75px;
+    text-align: start;
+    white-space: nowrap;
+}
+
+/* --------- curve outside ---------- */
+.navigation ul li:hover a::before,
+.navigation ul li.hovered a::before {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: -50px;
+    width: 50px;
+    height: 50px;
+    background-color: transparent;
+    border-radius: 50%;
+    box-shadow: 35px 35px 0 10px var(--white);
+    pointer-events: none;
+}
+.navigation ul li:hover a::after,
+.navigation ul li.hovered a::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: -50px;
+    width: 50px;
+    height: 50px;
+    background-color: transparent;
+    border-radius: 50%;
+    box-shadow: 35px -35px 0 10px var(--white);
+    pointer-events: none;
+}
+
+/* ===================== Main ===================== */
+.main {
+    position: absolute;
+    width: calc(100% - 300px);
+    left: 300px;
+    min-height: 100vh;
+    background: var(--white);
+    transition: 0.5s;
+}
+.main.active {
+    width: calc(100% - 80px);
+    left: 80px;
+}
+.topbar {
+    width: 100%;
+    height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+}
+.topbar .sticky-topbar {
+    background-color: #ffffff;
+    padding: 10px 100px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    width: 100%;
+    height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    background-color: #ffffff;
+    box-shadow: none;
+    transition: box-shadow 0.3s;
+}
+.sticky-topbar {
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-right: 10px;
+}
+
+.topbar-icon-profile {
+    font-size: 2rem;
+    color: var(--black1);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    transition: color 0.3s;
+}
+
+.topbar-icon-profile:hover {
+    color: #dc3545;
+}
+
+.topbar-logout {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+}
+
+.topbar-logout i {
+    font-size: 0.9rem;
+}
+
+
+.toggle {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.5rem;
+    cursor: pointer;
+}
+
+/* ======================= Kartu ====================== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.kartu {
+    opacity: 0;
+    animation: fadeInUp 2s forwards;
+}
+
+.kartu.animated {
+    opacity: 1;
+}
+.kartuBox {
+    position: relative;
+    width: 100%;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 30px;
+}
+
+.kartuBox .kartu {
+    position: relative;
+    background: var(--white);
+    padding: 30px;
+    border-radius: 20px;
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+    box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
+}
+
+.kartuBox .kartu .numbers {
+    position: relative;
+    font-weight: 500;
+    font-size: 2.5rem;
+    color: var(--black1);
+}
+
+.kartuBox .kartu .kartuName {
+    color: var(--black2);
+    font-size: 1.1rem;
+    margin-top: 5px;
+}
+
+.kartuBox .kartu .iconBx {
+    font-size: 3.5rem;
+    color: var(--black2);
+}
+
+.kartuBox .kartu:hover {
+    background: var(--black1);
+}
+.kartuBox .kartu:hover .numbers,
+.kartuBox .kartu:hover .kartuName,
+.kartuBox .kartu:hover .iconBx {
+    color: var(--white);
+}
+
+/* ================== Kalender ============== */
+.kalender {
+    position: relative;
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    /* margin-top: 10px; */
+}
+
+.kalender .cardKalender {
+    position: relative;
+    min-height: 500px;
+    width: 100vw;
+    background: var(--white);
+    padding: 20px;
+    box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
+    border-radius: 20px;
+}
+
+.kalender .cardHeader {
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+/* Mengubah warna teks dan menghapus garis bawah pada elemen FullCalendar akibat boostrap */
+.fc a {
+    color: inherit;
+    text-decoration: none;
+}
+/* Menambahkan ikon klik pada cursor mouse ketika di atas event */
+.fc-event {
+    cursor: pointer;
+}
+/* CSS untuk mengatur popover akibat efek css Main */
+.fc .fc-popover {
+    position: absolute;
+    top: 50%; /* Menempatkan popover di tengah layar secara vertikal */
+    left: 50%; /* Menempatkan popover di tengah layar secara horizontal */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Memberikan bayangan agar popover terlihat seperti modal */
+    background: white; /* Background putih untuk popover */
+}
+/* Mengubah warna teks "1+ more" menjadi biru */
+.fc-direction-ltr .fc-daygrid-more-link {
+    color: blue;
+}
+.filter {
+    display: flex;
+    justify-content: space-between;
+}
+.filter select {
+    width: auto;
+}
+
+/* ================== Role ============== */
+.role {
+    position: relative;
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    /* margin-top: 10px; */
+}
+
+.role .cardRole {
+    position: relative;
+    min-height: 500px;
+    width: 100vw;
+    background: var(--white);
+    padding: 20px;
+    box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
+    border-radius: 20px;
+}
+
+.table-role td .description {
+    white-space: pre-wrap; /* Preserves spaces and line breaks */
+    word-wrap: break-word; /* Memastikan teks tidak melampaui batas kolom */
+    overflow-wrap: break-word; /* Memastikan teks tidak melampaui batas kolom */
+}
+
+.role .cardHeader {
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+/* ================== Pegawai ============== */
+.pegawai {
+    position: relative;
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    /* margin-top: 10px; */
+}
+
+.pegawai .cardPegawai {
+    position: relative;
+    min-height: 500px;
+    width: 100vw;
+    background: var(--white);
+    padding: 20px;
+    box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
+    border-radius: 20px;
+}
+
+.table-pegawai td .description {
+    white-space: pre-wrap; /* Preserves spaces and line breaks */
+    word-wrap: break-word; /* Memastikan teks tidak melampaui batas kolom */
+    overflow-wrap: break-word; /* Memastikan teks tidak melampaui batas kolom */
+}
+
+.pegawai .cardHeader {
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+/* ================== Project ============== */
+.project {
+    position: relative;
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    /* margin-top: 10px; */
+}
+
+.project .cardProject {
+    position: relative;
+    min-height: 500px;
+    width: 100vw;
+    background: var(--white);
+    padding: 20px;
+    box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
+    border-radius: 20px;
+}
+
+.table-project td .description {
+    white-space: pre-wrap; /* Preserves spaces and line breaks */
+    word-wrap: break-word; /* Memastikan teks tidak melampaui batas kolom */
+    overflow-wrap: break-word; /* Memastikan teks tidak melampaui batas kolom */
+}
+
+.project .cardHeader {
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+/* ================== SubProject ============== */
+.subproject {
+    position: relative;
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    /* margin-top: 10px; */
+}
+
+.subproject .cardSubProject {
+    position: relative;
+    min-height: 500px;
+    width: 100vw;
+    background: var(--white);
+    padding: 20px;
+    box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
+    border-radius: 20px;
+}
+
+.table-subproject td .description {
+    white-space: pre-wrap; /* Preserves spaces and line breaks */
+    word-wrap: break-word; /* Memastikan teks tidak melampaui batas kolom */
+    overflow-wrap: break-word; /* Memastikan teks tidak melampaui batas kolom */
+}
+
+.subproject .cardHeader {
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+/* ================== Tugas ============== */
+.tugas {
+    position: relative;
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    /* margin-top: 10px; */
+}
+
+.tugas .cardTugas {
+    position: relative;
+    min-height: 500px;
+    width: 100vw;
+    background: var(--white);
+    padding: 20px;
+    box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
+    border-radius: 20px;
+}
+
+.table-tugas td .description {
+    white-space: pre-wrap; /* Preserves spaces and line breaks */
+    word-wrap: break-word; /* Memastikan teks tidak melampaui batas kolom */
+    overflow-wrap: break-word; /* Memastikan teks tidak melampaui batas kolom */
+}
+
+.tugas .cardHeader {
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+/* ================== Review ============== */
+.review {
+    position: relative;
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    /* margin-top: 10px; */
+}
+
+.review .cardReview {
+    position: relative;
+    min-height: 500px;
+    width: 100vw;
+    background: var(--white);
+    padding: 20px;
+    box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
+    border-radius: 20px;
+}
+
+.table-review td .description {
+    white-space: pre-wrap; /* Preserves spaces and line breaks */
+    word-wrap: break-word; /* Memastikan teks tidak melampaui batas kolom */
+    overflow-wrap: break-word; /* Memastikan teks tidak melampaui batas kolom */
+}
+
+.review .cardHeader {
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+/* ================== kpi ============== */
+.kpi {
+    position: relative;
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    /* margin-top: 10px; */
+}
+
+.kpi .cardKPI {
+    position: relative;
+    min-height: 500px;
+    width: 100vw;
+    background: var(--white);
+    padding: 20px;
+    box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
+    border-radius: 20px;
+}
+
+.table-kpi td .description {
+    white-space: pre-wrap; /* Preserves spaces and line breaks */
+    word-wrap: break-word; /* Memastikan teks tidak melampaui batas kolom */
+    overflow-wrap: break-word; /* Memastikan teks tidak melampaui batas kolom */
+}
+
+.kpi .cardHeader {
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.alert > p:nth-child(1),
+.alert > p:nth-child(2),
+.alert > p:nth-child(3),
+.alert > p:nth-child(4) {
+    margin-bottom: 0;
+}
+
+/* ================== Profile ============== */
+.profile {
+    position: relative;
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    /* margin-top: 10px; */
+}
+
+.profile .cardProfile {
+    position: relative;
+    min-height: 500px;
+    height: 100vh;
+    width: 100vw;
+    background: var(--white);
+    padding: 20px;
+    box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
+    border-radius: 20px;
+}
+
+.profile .cardHeader {
+    justify-content: space-between;
+    align-items: flex-start;
+}
+.cardHeader h2 {
+    font-weight: 600;
+    color: var(--green2);
+}
+.cardHeader h1 {
+    font-family: 'Caveat Brush', cursive;
+    color: var(--green2);
+    font-size: 40px;
+}
+.cardHeader p {
+    font-size: 15px;
+    margin-left: 180px;
+}
+
+/* ====================== Responsive Design ========================== */
+@media (max-width: 991px) {
+    .navigation {
+        left: -300px;
+    }
+    .navigation.active {
+        width: 300px;
+        left: 0;
+    }
+    .main {
+        width: 100%;
+        left: 0;
+    }
+    .main.active {
+        left: 300px;
+    }
+    .kartuBox {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .btn-edit {
+        margin-top: 0px;
+        margin-bottom: 8px;
+    }
+    .btn-hapus {
+        margin-top: 0px;
+    }
+
+}
+
+@media (max-width: 768px) {
+    .cardProfile .col-md-6 {
+        width: 100%;
+    }
+    .cardProfile form {
+        justify-content: center;
+    }
+    .cardProfile form .col-12 {
+        margin-left: 110px;
+    }
+    .profile {
+        grid-template-columns: 1fr;
+    }
+    .cardProfile {
+        overflow-x: auto;
+    }
+    .cardProfile p {
+        margin-left: 115px;
+    }
+}
+
+@media (max-width: 480px) {
+    .kartuBox {
+        grid-template-columns: repeat(1, 1fr);
+    }
+    .navigation {
+        width: 100%;
+        left: -100%;
+        z-index: 1000;
+    }
+    .navigation.active {
+        width: 63%;
+        left: 0;
+    }
+    .toggle {
+        z-index: 10001;
+    }
+    .main.active .toggle {
+        color: #fff;
+        position: relative;
+        right: 0;
+        left: initial;
+    }
+    .btn-edit {
+        margin-top: 0px;
+        margin-bottom: 8px;
+    }
+    .btn-hapus {
+        margin-top: 0px;
+    }
+    .table td .description {
+        width: 300px;
+    }
+    /* Kalender */
+    .fc-header-toolbar {
+        flex-direction: column; /* Ubah arah menjadi kolom */
+    }
+    .fc-header-toolbar .fc-toolbar-chunk {
+        flex: none; /* Atur ulang ukuran agar menumpuk secara vertikal */
+    }
+    .fc-header-toolbar .fc-left,
+    .fc-header-toolbar .fc-right {
+        justify-content: space-between; /* Sejajarkan tombol prev, next, dan tampilan */
+    }
+    .fc-header-toolbar .fc-center {
+        margin-top: 10px; /* Beri sedikit jarak antara tombol dan judul */
+    }
+    .fc-header-toolbar .fc-toolbar-chunk {
+        margin-bottom: 5px;
+    }
+    /* Field Entries per pages dan Pencarian tabel */
+    .dataTable-wrapper .dataTable-top {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .dataTable-wrapper .dataTable-top .dataTable-dropdown,
+    .dataTable-wrapper .dataTable-top .dataTable-search {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    .dataTable-wrapper .dataTable-top .dataTable-search input {
+        width: 100%;
+    }
+    .filter {
+        flex-direction: column; /* Mengatur dropdown menjadi vertikal */
+        align-items: center; /* Menyusun dropdown di tengah secara horizontal */
+    }
+    .filter select {
+        width: 100%; /* Agar dropdown mengambil lebar penuh */
+    }
+    .cardProfile p {
+        margin-left: 0;
+    }
+    .cardProfile form .col-12 {
+        margin-left: 0;
+    }
+}

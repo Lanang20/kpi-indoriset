@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Grafik Project - {{ pegawai.nama }}{% endblock %}
+{% block content %}
+{% load static %}
+
+<div class="kpi">
+    <div class="cardKPI">
+        <div class="cardHeader">
+            <figure class="highcharts-figure">
+                <div id="grafik-project" style="height:400px;"></div>
+            </figure>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/highcharts@latest/highcharts.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highcharts@latest/modules/drilldown.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highcharts@latest/modules/exporting.js"></script>
+<script>
+    Highcharts.chart('grafik-project', {
+        chart: { type: 'column' },
+        accessibility: { enabled: false },
+        title: { text: 'Grafik Total Project - {{ pegawai.nama }}' },
+        subtitle: { text: '{{ pegawai.jabatan }}{% if pegawai.perusahaan %} — {{ pegawai.perusahaan }}{% endif %}' },
+        exporting: {
+            chartOptions: {
+                title: { text: 'Grafik Total Project - {{ pegawai.nama }}' },
+                subtitle: {
+                    text: '{{ pegawai.jabatan }}{% if pegawai.perusahaan %} — {{ pegawai.perusahaan }}{% endif %}'
+                },
+            },
+            filename: 'Grafik Project - {{ pegawai.nama }}',
+        },
+        xAxis: { type: 'category' },
+        yAxis: {
+            title: { text: 'Jumlah Project' },
+            allowDecimals: false
+        },
+        legend: { enabled: false },
+        plotOptions: {
+            series: {
+                borderWidth: 0,
+                dataLabels: { enabled: true, format: '{point.y}' }
+            }
+        },
+        tooltip: {
+            headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+            pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y} project</b><br/>'
+        },
+        colors: ['#dc3545'],
+        series: [{
+            name: 'Tahun',
+            colorByPoint: false,
+            color: '#dc3545',
+            data: {{ data_tahunan_json|safe }}
+        }],
+        drilldown: {
+            breadcrumbs: { position: { align: 'right' } },
+            series: {{ drilldown_json|safe }}
+        }
+    });
+</script>
+
+{% endblock %}

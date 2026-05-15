@@ -1,0 +1,336 @@
+{% extends 'base.html' %}
+{% block title %}Review | KPI IndoRiset{% endblock %}
+{% block content %}
+{% load static %}
+    <!-- ================ Review ================= -->
+    <div class="review">
+        <div class="cardReview">
+            <div class="cardHeader">
+                <h2 class="text-center">Daftar Review</h2>
+                <div class="table-responsive">
+                    <table class="table table-responsive table-striped table-bordered table-sm table-review" id="myTable">
+                        <thead>
+                            <tr>
+                                <th style="text-align:center;">No</th>
+                                <th style="text-align:center;">Nama File</th>
+                                <th style="text-align:center;">Project</th>
+                                <th style="text-align:center;">Tanggal Review</th>
+                                {% if user.is_superuser or user.role == "manager" %}
+                                <th style="text-align:center;">Status Terlambat</th>
+                                {% endif %}
+                                <th style="text-align:center;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for review in review_list %}
+                            <tr>
+                                <td style="text-align:center;">
+                                    {{ forloop.counter }}
+                                </td>
+                                <td>
+                                    {{ review.review.tugas.nama_file }}
+                                </td>
+                                <td>
+                                    {{ review.review.tugas.subproject.project.nama }}
+                                </td>
+                                <td style="text-align:center;">
+                                    {{ review.review.tgl_revisi }} WIB
+                                </td>
+                                {% if user.is_superuser or user.role == "manager" %}
+                                <td style="text-align:center;">
+                                    {% if review.is_terlambat %}
+                                        <span class="badge bg-danger">Terlambat<br>{{ review.keterangan_waktu }}</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Tepat Waktu<br>(sisa {{ review.keterangan_waktu }})</span>
+                                    {% endif %}
+                                </td>
+                                {% endif %}
+                                <td style="text-align:center;">
+                                    <!-- Tombol Detail untuk semua role -->
+                                    <button
+                                        class="btn btn-sm btn-info"
+                                        data-id="{{ review.review.id }}"
+                                        data-namafile="{{ review.review.tugas.nama_file }}"
+                                        data-catatan="{{ review.review.catatan }}"
+                                        data-status="{{ review.review.status }}"
+                                        data-reviewer="{{ review.review.reviewer.nama|default:'-' }}"
+                                        data-tgl_revisi="{{ review.review.tgl_revisi }}"
+                                        data-pegawai="{{ review.review.tugas.subproject.pegawai.nama|default:'-' }}"
+                                        data-subproject="{{ review.review.tugas.subproject.nama }}"
+                                        data-project="{{ review.review.tugas.subproject.project.nama }}"
+                                        onclick="openDetailModal(this)">
+                                        <i class="fas fa-eye"></i> Detail
+                                    </button>
+                                    {% if user.role == "manager" %}
+                                    <button
+                                        class="btn btn-sm btn-primary"
+                                        data-id="{{ review.review.id }}"
+                                        data-catatan="{{ review.review.catatan }}"
+                                        data-status="{{ review.review.status }}"
+                                        onclick="openEditModal(this)">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                    <button
+                                        class="btn btn-sm btn-danger"
+                                        data-id="{{ review.review.id }}"
+                                        onclick="confirmDelete(this)">
+                                        <i class="fas fa-trash"></i> Hapus
+                                    </button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Detail Review -->
+        <div class="modal fade" id="DetailReview" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Detail Review</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Nama File</label>
+                                <input type="text" id="detail_namafile" class="form-control" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Tanggal Review</label>
+                                <input type="text" id="detail_tgl_revisi" class="form-control" readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Project</label>
+                                <input type="text" id="detail_project" class="form-control" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Subproject</label>
+                                <input type="text" id="detail_subproject" class="form-control" readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Staff Riset</label>
+                                <input type="text" id="detail_pegawai" class="form-control" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Status Revisi</label>
+                                <input type="text" id="detail_status" class="form-control" readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Reviewer</label>
+                                <input type="text" id="detail_reviewer" class="form-control" readonly>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Catatan</label>
+                            <textarea id="detail_catatan" class="form-control" rows="5" readonly></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Batas Modal Detail Review -->
+
+        <!-- Modal Edit Review -->
+        <div class="modal fade" id="EditReview" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Review</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="EditReviewForm">
+                            <input type="hidden" name="id" id="edit_id">
+                            <div class="mb-3">
+                                <label class="form-label">Catatan</label>
+                                <textarea name="catatan" id="edit_catatan" class="form-control" rows="5"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Status</label>
+                                <select name="status" id="edit_status" class="form-select">
+                                    <option value="revisi">Revisi</option>
+                                    <option value="selesai">Selesai</option>
+                                </select>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Tutup</button>
+                                <button class="btn btn-danger" type="submit">Simpan</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Batas Modal Edit Review -->
+    </div>
+
+<!-- SweetAlert2 JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function openEditModal(button){
+        const modal = new bootstrap.Modal(
+            document.getElementById('EditReview')
+        )
+        document.getElementById('edit_id').value =
+            button.dataset.id
+        document.getElementById('edit_catatan').value =
+            button.dataset.catatan
+        document.getElementById('edit_status').value =
+            button.dataset.status
+        modal.show()
+    }
+
+    // Pop Up Hapus
+    function confirmDelete(button) {
+        const id = button.getAttribute('data-id');
+
+        Swal.fire({
+            title: 'Apakah Anda Yakin?',
+            text: "Anda tidak bisa memulihkan data ini!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Hapus!',
+            confirmButtonColor: 'red',
+            cancelButtonText: 'Tidak, Batal!',
+            iconColor: 'red',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/review/hapus/${id}/`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+                }).then(response => {
+                if (response.ok) {
+                    Swal.fire({
+                        title: 'Dihapus!',
+                        text: 'Data review telah dihapus.',
+                        icon: 'success',
+                        confirmButtonColor: 'red',
+                    }).then(() => {
+                        location.reload(); // Refresh the page after deletion
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'There was a problem deleting the review.',
+                        icon: 'error',
+                        confirmButtonColor: 'red',
+                        iconColor: 'red',
+                    });
+                }
+                });
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                Swal.fire({
+                    title: 'Dibatalkan',
+                    text: 'Data review Anda tetap aman :)',
+                    icon: 'error',
+                    confirmButtonColor: 'red',
+                    iconColor: 'red',
+                });
+            }
+        });
+    }
+
+    // Konfirmasi Edit Review
+    document.querySelector('#EditReviewForm').addEventListener('submit', function(event){
+        event.preventDefault()
+        Swal.fire({
+            width: 600,
+            title: "Konfirmasi Edit",
+            text: "Apakah Anda yakin ingin menyimpan perubahan?",
+            icon: "warning",
+            iconColor: "red",
+            showCancelButton: true,
+            confirmButtonColor: "red",
+            confirmButtonText: "Ya, Simpan!",
+            cancelButtonText: "Cancel",
+        }).then((result) => {
+            if(result.isConfirmed){
+                const formData = new FormData(this)
+                fetch("{% url 'edit_review' %}",{
+                    method:'POST',
+                    body:formData,
+                    headers:{
+                        'X-CSRFToken':'{{ csrf_token }}'
+                    }
+                })
+                .then(response=>{
+                    if(!response.ok){
+                        return response.json().then(data=>{throw data})
+                    }
+                    return response.json()
+                })
+                .then(data=>{
+                    Swal.fire({
+                        width:600,
+                        title:"Disimpan!",
+                        text:"Perubahan berhasil disimpan.",
+                        icon:"success",
+                        confirmButtonColor:"red"
+                    }).then(()=>{
+                        location.reload()
+                    })
+                })
+                .catch(data=>{
+                    Swal.fire({
+                        width:data.width || 600,
+                        title:data.title || "Error",
+                        text:data.text || "Terjadi kesalahan",
+                        icon:data.icon || "error",
+                        confirmButtonColor:"red"
+                    })
+                })
+            }
+            else if(result.isDismissed){
+                Swal.fire({
+                    width:600,
+                    title:"Dibatalkan!",
+                    text:"Perubahan yang Anda lakukan tidak disimpan.",
+                    icon:"error",
+                    confirmButtonColor:"red"
+                })
+            }
+        })
+    })
+
+    // modal detail
+    function openDetailModal(button){
+        const modal = new bootstrap.Modal(
+            document.getElementById('DetailReview')
+        )
+        document.getElementById('detail_namafile').value =
+            button.dataset.namafile
+        document.getElementById('detail_catatan').value =
+            button.dataset.catatan
+        document.getElementById('detail_status').value =
+            button.dataset.status === 'revisi' ? 'Revisi' : 'Selesai'
+        document.getElementById('detail_reviewer').value =
+            button.dataset.reviewer
+        document.getElementById('detail_tgl_revisi').value =
+            button.dataset.tgl_revisi + ' WIB'
+        document.getElementById('detail_pegawai').value =
+            button.dataset.pegawai
+        document.getElementById('detail_subproject').value =
+            button.dataset.subproject
+        document.getElementById('detail_project').value =
+            button.dataset.project
+        modal.show()
+    }
+</script>
+{% endblock %}

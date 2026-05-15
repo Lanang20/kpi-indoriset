@@ -1,0 +1,685 @@
+{% extends 'base.html' %}
+{% block title %}SubProject | KPI IndoRiset{% endblock %}
+{% block content %}
+{% load static %}
+    <!-- ================ SubProject ================= -->
+    <div class="subproject">
+        <div class="cardSubProject">
+            <div class="cardHeader">
+                <h2 class="text-center">Daftar SubProject</h2>
+                {% if user.role == "manager" %}
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                    data-bs-target="#AddSubProject" data-bs-whatever="@mdo"><i class="fas fa-plus me-2"></i>Tambah SubProject</button>
+                {% endif %}
+                <div class="table-responsive">
+                    <table class="table table-responsive table-striped table-bordered table-sm table-subproject" id="myTable">
+                        <thead>
+                            <tr>
+                                <th style="text-align:center;">No</th>
+                                <th style="text-align:center;">Nama</th>
+                                <th style="text-align:center;">Project</th>
+                                {% if user.role != "staff" %}
+                                <th style="text-align:center;">Staff Riset</th>
+                                {% endif %}
+                                <th style="text-align:center;">Mulai</th>
+                                <th style="text-align:center;">Akhir</th>
+                                <th style="text-align:center;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sp in subproject_list %}
+                            <tr>
+                                <td style="text-align:center;">{{ forloop.counter }}</td>
+                                <td>{{ sp.nama }}</td>
+                                <td>{{ sp.project.nama }}</td>
+                                {% if user.role != "staff" %}
+                                <td>{{ sp.pegawai.nama|default:"-" }}</td>
+                                {% endif %}
+                                <td style="text-align:center;">{{ sp.mulai }} WIB</td>
+                                <td style="text-align:center;">{{ sp.akhir }} WIB</td>
+                                <td style="text-align:center;">
+                                    {% if user.role == "manager" %}
+                                        <!-- Tombol Edit -->
+                                        <button
+                                            class="btn btn-sm btn-primary"
+                                            style="margin-top:2px; margin-bottom: 2px;"
+                                            data-id="{{ sp.id }}"
+                                            data-nama="{{ sp.nama }}"
+                                            data-deskripsi="{{ sp.deskripsi }}"
+                                            data-project="{{ sp.project.id }}"
+                                            data-pegawai="{{ sp.pegawai.id }}"
+                                            data-tanggal_mulai="{{ sp.mulai|date:'Y-m-d' }}"
+                                            data-jam_mulai="{{ sp.mulai|date:'H:i' }}"
+                                            data-tanggal_akhir="{{ sp.akhir|date:'Y-m-d' }}"
+                                            data-jam_akhir="{{ sp.akhir|date:'H:i' }}"
+                                            data-sharepoint_path="{{ sp.sharepoint_path|default:'' }}"
+                                            onclick="openEditModal(this)">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <!-- Tombol Hapus -->
+                                        <button
+                                            class="btn btn-sm btn-danger"
+                                            style="margin-top:2px; margin-bottom: 2px;"
+                                            data-id="{{ sp.id }}"
+                                            onclick="confirmDelete(this)">
+                                            <i class="fas fa-trash"></i> Hapus
+                                        </button>
+                                    {% elif user.role == "staff" %}
+                                        <!-- Tombol Detail -->
+                                        <button
+                                            class="btn btn-sm btn-info"
+                                            data-id="{{ sp.id }}"
+                                            data-nama="{{ sp.nama }}"
+                                            data-deskripsi="{{ sp.deskripsi }}"
+                                            data-project="{{ sp.project.nama }}"
+                                            data-pegawai="{{ sp.pegawai.nama|default:'-' }}"
+                                            data-pegawai_nama="{{ sp.pegawai.nama|default:'-' }}"
+                                            data-tanggal_mulai="{{ sp.mulai|date:'Y-m-d' }}"
+                                            data-jam_mulai="{{ sp.mulai|date:'H:i' }}"
+                                            data-tanggal_akhir="{{ sp.akhir|date:'Y-m-d' }}"
+                                            data-jam_akhir="{{ sp.akhir|date:'H:i' }}"
+                                            onclick="openDetailModal(this)">
+                                            <i class="fas fa-eye"></i> Detail
+                                        </button>
+                                        <!-- Upload -->
+                                        <button
+                                            class="btn btn-sm btn-success"
+                                            data-id="{{ sp.id }}"
+                                            data-nama="{{ sp.nama }}"
+                                            onclick="openUploadModal(this)">
+                                            <i class="fas fa-upload"></i> Upload
+                                        </button>
+                                    {% else %}
+                                        <!-- Tombol Detail -->
+                                        <button
+                                            class="btn btn-sm btn-info"
+                                            data-id="{{ sp.id }}"
+                                            data-nama="{{ sp.nama }}"
+                                            data-deskripsi="{{ sp.deskripsi }}"
+                                            data-project="{{ sp.project.nama }}"
+                                            data-pegawai="{{ sp.pegawai.nama|default:'-' }}"
+                                            data-tanggal_mulai="{{ sp.mulai|date:'Y-m-d' }}"
+                                            data-jam_mulai="{{ sp.mulai|date:'H:i' }}"
+                                            data-tanggal_akhir="{{ sp.akhir|date:'Y-m-d' }}"
+                                            data-jam_akhir="{{ sp.akhir|date:'H:i' }}"
+                                            onclick="openDetailModal(this)">
+                                            <i class="fas fa-eye"></i> Detail
+                                        </button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Tambah SubProject -->
+        <div class="modal fade" id="AddSubProject" tabindex="-1" aria-labelledby="AddSubProjectlabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="AddSubProjectlabel">Tambah SubProject</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="AddSubProjectForm">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Nama</label>
+                                    <input type="text"
+                                        name="nama" class="form-control" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Project</label>
+                                    <select name="project" class="form-select" required>
+                                        <option value="">Pilih</option>
+                                        {% for project in project_list %}
+                                        <option value="{{ project.id }}">
+                                            {{ project.nama }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Staff Riset</label>
+                                    <select name="pegawai" class="form-select" required>
+                                        <option value="">Pilih</option>
+                                        {% for pegawai in pegawai_list %}
+                                        <option value="{{ pegawai.id }}">
+                                            {{ pegawai.nama }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Tanggal & Jam Mulai</label>
+                                    <div class="d-flex">
+                                        <div class="col-md-6 me-2">
+                                            <input type="date" name="tanggal_mulai" class="form-control" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input type="time" name="jam_mulai" class="form-control" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Tanggal & Jam Akhir</label>
+                                    <div class="d-flex">
+                                        <div class="col-md-6 me-2">
+                                            <input type="date" name="tanggal_akhir" class="form-control" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input type="time" name="jam_akhir" class="form-control" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Path SharePoint <span class="text-muted">(opsional)</span></label>
+                                <input type="text" name="sharepoint_path" class="form-control"
+                                    placeholder="Contoh: Laporan/ProyekA/AnalisisData">
+                                <div class="form-text">Kosongkan untuk menggunakan path default: <code>KPI_System/NamaProject/NamaSubproject</code></div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Deskripsi</label>
+                                <textarea name="deskripsi" class="form-control" rows="3" required></textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Tutup</button>
+                                <button class="btn btn-danger" type="submit">Tambah</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Batas Modal Tambah SubProject -->
+
+        <!-- Modal Edit SubProject -->
+        <div class="modal fade" id="EditSubProject" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit SubProject</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="EditSubProjectForm">
+                            <input type="hidden" id="edit_id" name="id">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Nama</label>
+                                    <input type="text" id="edit_nama" name="nama" class="form-control" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Project</label>
+                                    <select id="edit_project" name="project" class="form-select">
+                                        {% for project in project_list %}
+                                        <option value="{{ project.id }}">
+                                            {{ project.nama }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Staff Riset</label>
+                                    <select id="edit_pegawai" name="pegawai" class="form-select">
+                                        <!-- Opsi pegawai aktif -->
+                                        {% for pegawai in pegawai_list %}
+                                        <option value="{{ pegawai.id }}">{{ pegawai.nama }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Tanggal & Jam Mulai</label>
+                                    <div class="d-flex">
+                                        <div class="col-md-6 me-2">
+                                            <input type="date" id="edit_tanggal_mulai" name="tanggal_mulai" class="form-control" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input type="time" id="edit_jam_mulai" name="jam_mulai" class="form-control" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Tanggal & Jam Akhir</label>
+                                    <div class="d-flex">
+                                        <div class="col-md-6 me-2">
+                                            <input type="date" id="edit_tanggal_akhir" name="tanggal_akhir" class="form-control" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input type="time" id="edit_jam_akhir" name="jam_akhir" class="form-control" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Path SharePoint <span class="text-muted">(opsional)</span></label>
+                                <input type="text" id="edit_sharepoint_path" name="sharepoint_path" class="form-control"
+                                    placeholder="Contoh: Laporan/ProyekA/AnalisisData">
+                                <div class="form-text">Kosongkan untuk menggunakan path default: <code>KPI_System/NamaProject/NamaSubproject</code></div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Deskripsi</label>
+                                <textarea id="edit_deskripsi" name="deskripsi" class="form-control" rows="3"></textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                                <button class="btn btn-danger" type="submit">Simpan</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Batas Modal Edit SubProject -->
+
+        <!-- Modal Detail SubProject -->
+        <div class="modal fade" id="DetailSubProject">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Detail SubProject</h5>
+                        <button class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Nama</label>
+                                <input type="text" id="detail_nama" class="form-control" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Project</label>
+                                <input type="text" id="detail_project" class="form-control" readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Staff Riset</label>
+                                <input type="text" id="detail_pegawai" class="form-control" readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Tanggal & Jam Mulai</label>
+                                <input type="text" id="detail_mulai" class="form-control" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Tanggal & Jam Akhir</label>
+                                <input type="text" id="detail_akhir" class="form-control" readonly>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Deskripsi</label>
+                            <textarea id="detail_deskripsi" class="form-control" rows="3" readonly></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Batas Modal Detail -->
+
+        <!-- MODAL UPLOAD TUGAS -->
+        <div class="modal fade" id="UploadTugasModal">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Upload Tugas SubProject</h5>
+                        <button class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="UploadTugasForm" enctype="multipart/form-data">
+                            <input type="hidden" name="subproject" id="upload_subproject_id">
+                            <div class="mb-3">
+                                <label class="form-label">SubProject</label>
+                                <input type="text" id="upload_subproject_nama" class="form-control" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Upload File</label>
+                                <input type="file" name="file" class="form-control" required>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                                <button class="btn btn-success" type="submit">Upload</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Batas Modal Upload Tugas -->
+    </div>
+
+<!-- SweetAlert2 JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Upload Modal
+    function openUploadModal(button){
+        const modal = new bootstrap.Modal(
+            document.getElementById('UploadTugasModal')
+        )
+        document.getElementById('upload_subproject_id').value =
+            button.dataset.id
+        document.getElementById('upload_subproject_nama').value =
+            button.dataset.nama
+        modal.show()
+    }
+
+    // Pop Up Notifikasi Upload Tugas
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle Add SubProject Form Submission
+        document.querySelector('#UploadTugasForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            const formData = new FormData(this);
+
+            fetch("{% url 'upload_tugas' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => {
+                return response.json().then(data => ({
+                    status: response.status, // Mendapatkan status HTTP
+                    json: data
+                }));
+            })
+            .then(data => {
+                if (data.status === 200) {
+                    Swal.fire({
+                        title: "Sukses!",
+                        text: data.json.message,
+                        icon: "success",
+                        confirmButtonColor: 'red',
+                    }).then(() => {
+                        // Kosongkan form setelah pop-up ditutup
+                        document.querySelector('#UploadTugasForm').reset();
+                        // Tutup modal menggunakan Bootstrap API
+                        var myModal = bootstrap.Modal.getInstance(document.getElementById('UploadTugas'));
+                        if (myModal) {
+                            myModal.hide();
+                        }
+                        // Refresh halaman
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        title: "Gagal!",
+                        text: data.json.message,
+                        icon: "error",
+                        confirmButtonColor: 'red',
+                        iconColor: 'red',
+                    });
+                }
+            });
+        });
+    });
+
+    // Detail SubProject
+    function openDetailModal(button){
+        const modal = new bootstrap.Modal(
+            document.getElementById('DetailSubProject')
+        )
+        document.getElementById('detail_nama').value =
+            button.dataset.nama
+        document.getElementById('detail_project').value =
+            button.dataset.project
+        document.getElementById('detail_pegawai').value =
+            button.dataset.pegawai
+        document.getElementById('detail_mulai').value =
+            formatTanggalWaktu(button.dataset.tanggal_mulai, button.dataset.jam_mulai)
+        document.getElementById('detail_akhir').value =
+            formatTanggalWaktu(button.dataset.tanggal_akhir, button.dataset.jam_akhir)
+        document.getElementById('detail_deskripsi').value =
+            button.dataset.deskripsi
+        modal.show()
+    }
+
+    function formatTanggalWaktu(tanggal, jam){
+        const bulanIndo = [
+            "Januari","Februari","Maret","April","Mei","Juni",
+            "Juli","Agustus","September","Oktober","November","Desember"
+        ];
+        const d = new Date(tanggal);
+        const hari = d.getDate();
+        const bulan = bulanIndo[d.getMonth()];
+        const tahun = d.getFullYear();
+        const jamFormatted = jam.replace(':', '.');
+        return `${hari} ${bulan} ${tahun}, ${jamFormatted} WIB`;
+    }
+
+    // Edit Subproject
+    function openEditModal(button){
+        const modal = new bootstrap.Modal(
+            document.getElementById('EditSubProject')
+        )
+        document.getElementById('edit_id').value = button.dataset.id
+        document.getElementById('edit_nama').value = button.dataset.nama
+        document.getElementById('edit_deskripsi').value = button.dataset.deskripsi
+        document.getElementById('edit_project').value = button.dataset.project
+        document.getElementById('edit_tanggal_mulai').value =
+            button.dataset.tanggal_mulai
+        document.getElementById('edit_jam_mulai').value =
+            button.dataset.jam_mulai
+        document.getElementById('edit_tanggal_akhir').value =
+            button.dataset.tanggal_akhir
+        document.getElementById('edit_jam_akhir').value =
+            button.dataset.jam_akhir
+        document.getElementById('edit_sharepoint_path').value =
+            button.dataset.sharepoint_path
+
+        // Set pegawai — jika nonaktif, inject dulu sebagai opsi sementara
+        const selectPegawai = document.getElementById('edit_pegawai')
+        const pegawaiId = button.dataset.pegawai
+        const pegawaiNama = button.dataset.pegawai_nama
+
+        // Cek apakah pegawai sudah ada di dropdown (berarti masih aktif)
+        const sudahAda = Array.from(selectPegawai.options).some(
+            opt => opt.value === pegawaiId
+        )
+
+        if (!sudahAda) {
+            // Inject opsi sementara untuk pegawai nonaktif
+            const opsiSementara = document.createElement('option')
+            opsiSementara.value = pegawaiId
+            opsiSementara.textContent = pegawaiNama + ' (Tidak Aktif)'
+            opsiSementara.dataset.sementara = 'true'  // tandai agar bisa dihapus nanti
+            selectPegawai.insertBefore(opsiSementara, selectPegawai.firstChild)
+        }
+
+        selectPegawai.value = pegawaiId
+
+        // Hapus opsi sementara ketika user mengganti pilihan
+        selectPegawai.onchange = function(){
+            const opsiSementara = selectPegawai.querySelector('[data-sementara="true"]')
+            if (opsiSementara) opsiSementara.remove()
+        }
+
+        modal.show()
+    }
+
+    // Pop Up Tambah SubProject
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle Add SubProject Form Submission
+        document.querySelector('#AddSubProjectForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            const formData = new FormData(this);
+
+            fetch("{% url 'tambah_subproject' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => {
+                return response.json().then(data => ({
+                    status: response.status, // Mendapatkan status HTTP
+                    json: data
+                }));
+            })
+            .then(data => {
+                if (data.status === 200) {
+                    Swal.fire({
+                        title: "Sukses!",
+                        text: data.json.message,
+                        icon: "success",
+                        confirmButtonColor: 'red',
+                    }).then(() => {
+                        // Kosongkan form setelah pop-up ditutup
+                        document.querySelector('#AddSubProjectForm').reset();
+                        // Tutup modal menggunakan Bootstrap API
+                        var myModal = bootstrap.Modal.getInstance(document.getElementById('AddSubProject'));
+                        if (myModal) {
+                            myModal.hide();
+                        }
+                        // Refresh halaman
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        title: "Gagal!",
+                        text: data.json.message,
+                        icon: "error",
+                        confirmButtonColor: 'red',
+                        iconColor: 'red',
+                    });
+                }
+            });
+        });
+    });
+
+    // Pop Up Hapus
+    function confirmDelete(button) {
+        const id = button.getAttribute('data-id');
+
+        Swal.fire({
+            title: 'Apakah Anda Yakin?',
+            text: "Anda tidak bisa memulihkan data ini!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Hapus!',
+            confirmButtonColor: 'red',
+            cancelButtonText: 'Tidak, Batal!',
+            iconColor: 'red',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/subproject/hapus/${id}/`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+                }).then(response => {
+                if (response.ok) {
+                    Swal.fire({
+                        title: 'Dihapus!',
+                        text: 'Data subproject telah dihapus.',
+                        icon: 'success',
+                        confirmButtonColor: 'red',
+                    }).then(() => {
+                        location.reload(); // Refresh the page after deletion
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'There was a problem deleting the subproject.',
+                        icon: 'error',
+                        confirmButtonColor: 'red',
+                        iconColor: 'red',
+                    });
+                }
+                });
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                Swal.fire({
+                    title: 'Dibatalkan',
+                    text: 'Data subproject Anda tetap aman :)',
+                    icon: 'error',
+                    confirmButtonColor: 'red',
+                    iconColor: 'red',
+                });
+            }
+        });
+    }
+
+    // Konfirmasi Edit SubProject
+    document.querySelector('#EditSubProjectForm').addEventListener('submit', function(event){
+        event.preventDefault()
+        Swal.fire({
+            width: 600,
+            title: "Konfirmasi Edit",
+            text: "Apakah Anda yakin ingin menyimpan perubahan?",
+            icon: "warning",
+            iconColor: "red",
+            showCancelButton: true,
+            confirmButtonColor: "red",
+            confirmButtonText: "Ya, Simpan!",
+            cancelButtonText: "Cancel",
+        }).then((result) => {
+            if(result.isConfirmed){
+                const formData = new FormData(this)
+                fetch("{% url 'edit_subproject' %}",{
+                    method:'POST',
+                    body:formData,
+                    headers:{
+                        'X-CSRFToken':'{{ csrf_token }}'
+                    }
+                })
+                .then(response=>{
+                    if(!response.ok){
+                        return response.json().then(data=>{throw data})
+                    }
+                    return response.json()
+                })
+                .then(data=>{
+                    Swal.fire({
+                        width:600,
+                        title:"Disimpan!",
+                        text:"Perubahan berhasil disimpan.",
+                        icon:"success",
+                        confirmButtonColor:"red"
+                    }).then(()=>{
+                        location.reload()
+                    })
+                })
+                .catch(data=>{
+                    Swal.fire({
+                        width:data.width || 600,
+                        title:data.title || "Error",
+                        text:data.text || "Terjadi kesalahan",
+                        icon:data.icon || "error",
+                        confirmButtonColor:"red"
+                    })
+                })
+            }
+            else if(result.isDismissed){
+                Swal.fire({
+                    width:600,
+                    title:"Dibatalkan!",
+                    text:"Perubahan yang Anda lakukan tidak disimpan.",
+                    icon:"error",
+                    confirmButtonColor:"red"
+                })
+            }
+        })
+    })
+</script>
+{% endblock %}

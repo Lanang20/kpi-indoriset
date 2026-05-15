@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            size: A4;
+            margin-left: 200px;
+            margin-right: 200px;
+            margin-top: 70px;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+        }
+
+        .outer-table {
+            width: 50%;
+            border: 3px solid black;
+            border-collapse: collapse;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 3px solid black;
+            padding: 10px;
+        }
+
+        .content {
+            padding: 5px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<table class="outer-table">
+    <tr>
+        <td class="header">
+            <h1>
+                Laporan KPI Pegawai<br>
+                {{ perusahaan }}
+            </h1>
+        </td>
+    </tr>
+
+    <tr>
+        <td class="content">
+            <h3 style="text-align: center;">
+                <span class="bold">Periode KPI:</span> {{ start }} s/d {{ end }}
+            </h3>
+            <p>
+                <span class="bold">Nama:</span> {{ pegawai.nama }}<br>
+                <span class="bold">Email:</span> {{ pegawai.email }}<br>
+                <span class="bold">Jabatan:</span> {{ pegawai.jabatan }}<hr>
+            {% if pegawai.role == "staff" %}
+                <span class="bold">Total Tugas:</span> {{ total_tugas }}<br>
+                <span class="bold">Tepat Waktu:</span> {{ tepat_waktu }}<br>
+                <span class="bold">Terlambat:</span> {{ terlambat }}
+                
+                {% if persentase_per_project %}
+                <hr>
+                <span class="bold">Persentase Tepat Waktu per Project:</span><br><br>
+                <table style="width:100%; border-collapse:collapse; font-size:11px;">
+                    <thead>
+                        <tr style="background:#eee;">
+                            <th style="border:1px solid #ccc; padding:4px;">Project</th>
+                            <th style="border:1px solid #ccc; padding:4px; text-align:center;">Tepat Waktu</th>
+                            <th style="border:1px solid #ccc; padding:4px; text-align:center;">Total</th>
+                            <th style="border:1px solid #ccc; padding:4px; text-align:center;">Persentase</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in persentase_per_project %}
+                        <tr>
+                            <td style="border:1px solid #ccc; padding:4px;">{{ p.project }}</td>
+                            <td style="border:1px solid #ccc; padding:4px; text-align:center;">{{ p.tepat_waktu }}</td>
+                            <td style="border:1px solid #ccc; padding:4px; text-align:center;">{{ p.total }}</td>
+                            <td style="border:1px solid #ccc; padding:4px; text-align:center;">{{ p.persen }}%</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
+
+            {% else %}
+                <span class="bold">Total Project:</span> {{ total_project }}<br>
+                <span class="bold">Project Selesai:</span> {{ project_selesai }}<br>
+                <span class="bold">Project Terlambat:</span> {{ project_terlambat }}<hr>
+                <span class="bold">Total Review:</span> {{ total_review }}<br>
+                <span class="bold">Review Tepat Waktu:</span> {{ review_tepat_waktu }}<br>
+                <span class="bold">Review Terlambat:</span> {{ review_terlambat }}<br>
+                <span class="bold">Persentase Review Tepat Waktu:</span> {{ persen_review_tepat_waktu }}%
+            {% endif %}
+            </p>
+
+        </td>
+    </tr>
+</table>
+
+<div class="footer">
+    <p><b>Tanggal Cetak:</b> {{ tanggal_cetak }}</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% block title %}Profile | KPI Pegawai{% endblock %}
+{% block content %}
+{% load static %}
+
+    <!-- ================ Profile ================= -->
+    <div class="profile">
+        <div class="cardProfile">
+            <div class="cardHeader">
+                <div class="container col-xxl-8 px-4 py-12">
+                    <h1 class="mb-3 text-center" style="margin-top: 35px;">Profile Anda</h1>
+                    <p class="text-center mb-4" style="margin-left: 0;">Berikut adalah profil Anda, klik edit untuk mengubah data Anda.</p>
+                    <div class="row g-5">
+                        <div class="col-md-6 col-lg-5 d-flex d-md-block">
+                            <img src="{% static 'images/profile.svg' %}" alt="profile" class="img-fluid">
+                        </div>
+                        <div class="col-md-6 col-lg-7 d-flex d-md-block">
+                            <form id="profile-form" class="row g-3" method="post" action="{% url 'edit_profile' %}">
+                                {% csrf_token %}
+                                <div class="col-md-5">
+                                    <label class="form-label">Nama</label>
+                                    <input type="text" class="form-control" name="nama" value="{{ user.nama }}" required>
+                                </div>
+                                <div class="col-md-5">
+                                    <label class="form-label">Username</label>
+                                    <input type="text" class="form-control" name="username" value="{{ user.username }}" required>
+                                </div>
+                                <div class="col-md-5">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control" name="email" value="{{ user.email }}" required>
+                                </div>
+                                <div class="col-md-5">
+                                    <label class="form-label">Perusahaan</label>
+                                    <input type="text" class="form-control" value="{{ user.perusahaan.nama|default:'-' }}" readonly>
+                                </div>
+                                <div class="col-md-5">
+                                    <label class="form-label">Jabatan</label>
+                                    <input type="text" class="form-control" value="{{ user.jabatan.nama|default:'-' }}" readonly>
+                                </div>
+                                <div class="col-md-5">
+                                    <label class="form-label">Status Pegawai</label>
+                                    <input type="text" class="form-control" value="{{ user.status_pegawai|title }}" readonly>
+                                </div>
+                                <div class="col-md-5">
+                                    <label class="form-label">Status Akun</label>
+                                    <input type="text" class="form-control" value="{{ user.status_akun|title }}" readonly>
+                                </div>
+                                <div class="col-md-5">
+                                    <label class="form-label">Ganti Password</label>
+                                    <input type="password" class="form-control" name="password" placeholder="Isi jika diperlukan">
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-danger btn-edit btn-sm px-4 me-md-2">Edit</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("profile-form");
+
+            form.addEventListener("submit", function (event) {
+                event.preventDefault();
+
+                Swal.fire({
+                    width: 600,
+                    title: "Konfirmasi Edit",
+                    text: "Apakah Anda yakin ingin menyimpan perubahan?",
+                    icon: "warning",
+                    iconColor: "red",
+                    showCancelButton: true,
+                    confirmButtonColor: "red",
+                    confirmButtonText: "Ya, Simpan!",
+                    cancelButtonText: "Cancel",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const formData = new FormData(form);
+
+                        fetch(form.action, {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                            }
+                        })
+                        .then(response => {
+                            if (!response.ok) return response.json().then(data => { throw data; });
+                            return response.json();
+                        })
+                        .then(data => {
+                            Swal.fire({
+                                width: 600,
+                                title: "Disimpan!",
+                                text: "Perubahan berhasil disimpan.",
+                                icon: "success",
+                                confirmButtonColor: "red",
+                            }).then(() => {
+                                window.location.href = data.redirect_url;
+                            });
+                        })
+                        .catch(data => {
+                            Swal.fire({
+                                width: data.width || 600,
+                                title: data.title || "Error",
+                                text: data.text || "Terjadi kesalahan",
+                                icon: data.icon || "error",
+                                confirmButtonColor: data.confirmButtonColor || "red",
+                            });
+                        });
+                    } else if (result.isDismissed) {
+                        Swal.fire({
+                            width: 600,
+                            title: "Dibatalkan!",
+                            text: "Perubahan yang Anda lakukan tidak disimpan.",
+                            icon: "error",
+                            confirmButtonColor: "red",
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+
+{% endblock %}

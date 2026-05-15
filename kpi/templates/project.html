@@ -1,0 +1,712 @@
+{% extends 'base.html' %}
+{% block title %}Project | KPI IndoRiset{% endblock %}
+{% block content %}
+{% load static %}
+    <!-- ================ Project ================= -->
+    <div class="project">
+        <div class="cardProject">
+            <div class="cardHeader">
+                <h2 class="text-center">Daftar Project</h2>
+                {% if user.role == 'manager' %}
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                    data-bs-target="#AddProject" data-bs-whatever="@mdo"><i class="fas fa-plus me-2"></i>Tambah Project</button>
+                {% endif %}
+                <div class="table-responsive">
+                    <table class="table table-responsive table-striped table-bordered table-sm table-project" id="myTable">
+                        <thead>
+                            <tr>
+                                <th style="text-align:center;">No</th>
+                                <th style="text-align:center;">Nama Project</th>
+                                {% if user.is_superuser %}
+                                <th style="text-align:center;">Perusahaan</th>
+                                {% endif %}
+                                <th style="text-align:center;">Tanggal Mulai</th>
+                                <th style="text-align:center;">Tanggal Akhir</th>
+                                <th style="text-align:center;">Status</th>
+                                <th style="text-align:center;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in project_list %}
+                            <tr>
+                                <td style="text-align:center;">{{ forloop.counter }}</td>
+                                <td>{{ item.project.nama }}</td>
+                                {% if user.is_superuser %}
+                                <td>{{ item.project.perusahaan }}</td>
+                                {% endif %}
+                                <td style="text-align:center;">{{ item.project.mulai }}</td>
+                                <td style="text-align:center;">{{ item.project.akhir }}</td>
+                                <td style="text-align:center;">
+                                    {% if item.project.status == 'selesai' %}
+                                        {% if item.terlambat_info %}
+                                            <span class="badge bg-danger">
+                                                Selesai<br>Terlambat {{ item.terlambat_info }}
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-success">Selesai</span>
+                                        {% endif %}
+                                    {% elif item.terlambat_info %}
+                                        <span class="badge bg-danger">
+                                            Ongoing<br>Terlambat {{ item.terlambat_info }}
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Ongoing</span>
+                                    {% endif %}
+                                </td>
+                                <td style="text-align:center;">
+                                    <button
+                                        class="btn btn-sm btn-info"
+                                        data-id="{{ item.project.id }}"
+                                        data-nama="{{ item.project.nama }}"
+                                        data-kode_pekerjaan="{{ item.project.kode_pekerjaan }}"
+                                        data-daerah="{{ item.project.daerah }}"
+                                        data-instansi="{{ item.project.instansi }}"
+                                        data-perusahaan="{{ item.project.perusahaan.nama }}"
+                                        data-perusahaan_administrasi="{{ item.project.perusahaan_administrasi|default:'' }}"
+                                        data-mulai="{{ item.project.mulai }}"
+                                        data-akhir="{{ item.project.akhir }}"
+                                        data-status="{{ item.project.status }}"
+                                        data-status_kontrak="{{ item.project.status_kontrak }}"
+                                        data-dibuat_oleh="{{ item.project.dibuat_oleh.nama|default:'-' }}"
+                                        data-deskripsi="{{ item.project.deskripsi }}"
+                                        onclick="openDetailProject(this)">
+                                        <i class="fas fa-eye"></i> Detail
+                                    </button>
+                                    {% if user.role == 'manager' %}
+                                    <button
+                                        class="btn btn-sm btn-primary"
+                                        data-id="{{ item.project.id }}"
+                                        data-nama="{{ item.project.nama }}"
+                                        data-kode_pekerjaan="{{ item.project.kode_pekerjaan }}"
+                                        data-daerah="{{ item.project.daerah }}"
+                                        data-instansi="{{ item.project.instansi }}"
+                                        data-status_kontrak="{{ item.project.status_kontrak }}"
+                                        data-deskripsi="{{ item.project.deskripsi }}"
+                                        data-mulai="{{ item.project.mulai|date:'Y-m-d' }}"
+                                        data-akhir="{{ item.project.akhir|date:'Y-m-d' }}"
+                                        data-perusahaan="{{ item.project.perusahaan.id }}"
+                                        data-status="{{ item.project.status }}"
+                                        data-perusahaan_administrasi="{{ item.project.perusahaan_administrasi|default:'' }}"
+                                        onclick="openEditProject(this)">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                    <button
+                                        class="btn btn-sm btn-danger"
+                                        data-id="{{ item.project.id }}"
+                                        onclick="confirmDeleteProject(this)">
+                                        <i class="fas fa-trash me-2"></i>Hapus
+                                    </button>
+                                    {% endif %}
+                                    {% if user.is_superuser %}
+                                    <button
+                                        class="btn btn-sm btn-primary"
+                                        data-id="{{ item.project.id }}"
+                                        data-mulai="{{ item.project.mulai|date:'Y-m-d' }}"
+                                        data-akhir="{{ item.project.akhir|date:'Y-m-d' }}"
+                                        data-status="{{ item.project.status }}"
+                                        onclick="openEditSuperuser(this)">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Tambah Project -->
+        <div class="modal fade" id="AddProject" tabindex="-1" aria-labelledby="AddProjectlabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="AddProjectlabel">Tambah Project</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="AddProjectForm">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Nama Project</label>
+                                    <input type="text" name="nama" class="form-control" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Kode Project</label>
+                                    <input type="text" name="kode_pekerjaan" class="form-control">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Tanggal Mulai</label>
+                                    <input type="date" name="mulai" class="form-control" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Tanggal Akhir</label>
+                                    <input type="date" name="akhir" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Instansi</label>
+                                    <input type="text" name="instansi" class="form-control">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Daerah</label>
+                                    <input type="text" name="daerah" class="form-control">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Perusahaan Pelaksana</label>
+                                    <select name="perusahaan" class="form-select" disabled>
+                                        <option value="{{ user.perusahaan.id }}" selected>
+                                            {{ user.perusahaan.nama }}
+                                        </option>
+                                    </select>
+                                    <input type="hidden" name="perusahaan" value="{{ user.perusahaan.id }}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Perusahaan Administrasi <span class="text-muted">(opsional)</span></label>
+                                    <input type="text" name="perusahaan_administrasi" class="form-control">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Status Kontrak</label>
+                                    <select name="status_kontrak" class="form-select">
+                                        <option value="belum_kontrak">Belum Kontrak</option>
+                                        <option value="kontrak">Kontrak</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Deskripsi</label>
+                                <textarea name="deskripsi" class="form-control" rows="3"></textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Tutup</button>
+                                <button class="btn btn-danger" type="submit">Tambah</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Batas Modal Tambah Project -->
+
+        <!-- Modal Edit Project -->
+        <div class="modal fade" id="EditProject" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Project</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="EditProjectForm">
+                            <input type="hidden" id="edit_id" name="id">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Nama Project</label>
+                                    <input type="text" id="edit_nama" name="nama" class="form-control" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Kode Project</label>
+                                    <input type="text" id="edit_kode_pekerjaan" name="kode_pekerjaan" class="form-control">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Instansi</label>
+                                    <input type="text" id="edit_instansi" name="instansi" class="form-control">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Daerah</label>
+                                    <input type="text" id="edit_daerah" name="daerah" class="form-control">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Tanggal Mulai</label>
+                                    <input type="text" id="edit_mulai_display" class="form-control" readonly>
+                                    <input type="hidden" id="edit_mulai" name="mulai">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Tanggal Akhir</label>
+                                    <input type="text" id="edit_akhir_display" class="form-control" readonly>
+                                    <input type="hidden" id="edit_akhir" name="akhir">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Perusahaan Pelaksana</label>
+                                    <select id="edit_perusahaan" name="perusahaan" class="form-select" disabled>
+                                        {% for perusahaan in perusahaan_list %}
+                                        <option value="{{ perusahaan.id }}">
+                                            {{ perusahaan.nama }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    <input type="hidden" id="edit_perusahaan_hidden" name="perusahaan">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Perusahaan Administrasi <span class="text-muted">(opsional)</span></label>
+                                    <input type="text" id="edit_perusahaan_administrasi" name="perusahaan_administrasi" class="form-control">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Status Progress</label>
+                                    <input type="text" id="edit_status_display" class="form-control" readonly>
+                                    <input type="hidden" id="edit_status" name="status">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Status Kontrak</label>
+                                    <select id="edit_status_kontrak" name="status_kontrak" class="form-select">
+                                        <option value="belum_kontrak">Belum Kontrak</option>
+                                        <option value="kontrak">Kontrak</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Deskripsi</label>
+                                <textarea id="edit_deskripsi" name="deskripsi" class="form-control" rows="3"></textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                                <button class="btn btn-danger" type="submit">Simpan</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Batas Modal Edit Project -->
+
+        <!-- Modal Detail Project -->
+        <div class="modal fade" id="DetailProject" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Detail Project</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Nama Project</label>
+                                <input type="text" id="detail_nama" class="form-control" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Kode Project</label>
+                                <input type="text" id="detail_kode_pekerjaan" class="form-control" readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Instansi</label>
+                                <input type="text" id="detail_instansi" class="form-control" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Daerah</label>
+                                <input type="text" id="detail_daerah" class="form-control" readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Tanggal Mulai</label>
+                                <input type="text" id="detail_mulai" class="form-control" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Tanggal Akhir</label>
+                                <input type="text" id="detail_akhir" class="form-control" readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Perusahaan Pelaksana</label>
+                                <input type="text" id="detail_perusahaan" class="form-control" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Perusahaan Administrasi</label>
+                                <input type="text" id="detail_perusahaan_administrasi" class="form-control" readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Dibuat Oleh</label>
+                                <input type="text" id="detail_dibuat_oleh" class="form-control" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Status Progress</label>
+                                <input type="text" id="detail_status" class="form-control" readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Status Kontrak</label>
+                                <input type="text" id="detail_status_kontrak" class="form-control" readonly>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Deskripsi</label>
+                            <textarea id="detail_deskripsi" class="form-control" rows="3" readonly></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Batas Modal Detail Project -->
+
+        <!-- Modal Edit Project Superuser -->
+        <div class="modal fade" id="EditProjectSuperuser" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Project</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="EditProjectSuperuserForm">
+                            <input type="hidden" id="su_edit_id" name="id">
+                            <div class="mb-3">
+                                <label class="form-label">Tanggal Mulai</label>
+                                <input type="date" id="su_edit_mulai" name="mulai" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Tanggal Akhir</label>
+                                <input type="date" id="su_edit_akhir" name="akhir" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Status Progress</label>
+                                <select id="su_edit_status" name="status" class="form-select">
+                                    <option value="ongoing">Ongoing</option>
+                                    <option value="selesai">Selesai</option>
+                                </select>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                                <button class="btn btn-danger" type="submit">Simpan</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Batas Modal Edit Project Superuser -->
+    </div>
+
+<!-- SweetAlert2 JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function formatTanggalIndo(tanggal) {
+        if (!tanggal) return '-';
+        const bulan = [
+            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        ];
+        const d = new Date(tanggal);
+        const hari = d.getDate();
+        const bln = bulan[d.getMonth()];
+        const thn = d.getFullYear();
+        return `${hari} ${bln} ${thn}`;
+    }
+
+    function openEditProject(button) {
+        const modal = new bootstrap.Modal(
+            document.getElementById('EditProject')
+        );
+        document.getElementById('edit_id').value = button.dataset.id;
+        document.getElementById('edit_nama').value = button.dataset.nama;
+        document.getElementById('edit_deskripsi').value = button.dataset.deskripsi;
+
+        // Tanggal mulai
+        document.getElementById('edit_mulai').value = button.dataset.mulai;
+        document.getElementById('edit_mulai_display').value = formatTanggalIndo(button.dataset.mulai);
+
+        // Tanggal akhir
+        document.getElementById('edit_akhir').value = button.dataset.akhir;
+        document.getElementById('edit_akhir_display').value = formatTanggalIndo(button.dataset.akhir);
+
+        document.getElementById('edit_perusahaan').value = button.dataset.perusahaan;
+        document.getElementById('edit_perusahaan_hidden').value = button.dataset.perusahaan;
+        
+        // Status — tampilkan label bukan value
+        const statusMap = { 'ongoing': 'Ongoing', 'selesai': 'Selesai' };
+        document.getElementById('edit_status').value = button.dataset.status;
+        document.getElementById('edit_status_display').value = statusMap[button.dataset.status] || button.dataset.status;
+
+        document.getElementById('edit_kode_pekerjaan').value = button.dataset.kode_pekerjaan;
+        document.getElementById('edit_daerah').value = button.dataset.daerah;
+        document.getElementById('edit_instansi').value = button.dataset.instansi;
+        document.getElementById('edit_status_kontrak').value = button.dataset.status_kontrak;
+        document.getElementById('edit_perusahaan_administrasi').value = button.dataset.perusahaan_administrasi || '';
+        modal.show();
+    }
+
+    // Pop Up Tambah Project
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle Add Project Form Submission
+        document.querySelector('#AddProjectForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            const formData = new FormData(this);
+
+            fetch("{% url 'tambah_project' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => {
+                return response.json().then(data => ({
+                    status: response.status, // Mendapatkan status HTTP
+                    json: data
+                }));
+            })
+            .then(data => {
+                if (data.status === 200) {
+                    Swal.fire({
+                        title: "Sukses!",
+                        text: data.json.message,
+                        icon: "success",
+                        confirmButtonColor: 'red',
+                    }).then(() => {
+                        // Kosongkan form setelah pop-up ditutup
+                        document.querySelector('#AddProjectForm').reset();
+                        // Tutup modal menggunakan Bootstrap API
+                        var myModal = bootstrap.Modal.getInstance(document.getElementById('AddProject'));
+                        if (myModal) {
+                            myModal.hide();
+                        }
+                        // Refresh halaman
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        title: "Gagal!",
+                        text: data.json.message,
+                        icon: "error",
+                        confirmButtonColor: 'red',
+                        iconColor: 'red',
+                    });
+                }
+            });
+        });
+    });
+
+    function openEditSuperuser(button) {
+        const modal = new bootstrap.Modal(
+            document.getElementById('EditProjectSuperuser')
+        );
+        document.getElementById('su_edit_id').value = button.dataset.id;
+        document.getElementById('su_edit_mulai').value = button.dataset.mulai;
+        document.getElementById('su_edit_akhir').value = button.dataset.akhir;
+        document.getElementById('su_edit_status').value = button.dataset.status;
+        modal.show();
+    }
+
+    document.querySelector('#EditProjectSuperuserForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        Swal.fire({
+            width: 600,
+            title: "Konfirmasi Edit",
+            text: "Apakah Anda yakin ingin menyimpan perubahan?",
+            icon: "warning",
+            iconColor: "red",
+            showCancelButton: true,
+            confirmButtonColor: "red",
+            confirmButtonText: "Ya, Simpan!",
+            cancelButtonText: "Batal",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const formData = new FormData(this);
+                fetch("{% url 'edit_project' %}", {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => { throw data; });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    Swal.fire({
+                        width: 600,
+                        title: "Disimpan!",
+                        text: "Perubahan berhasil disimpan.",
+                        icon: "success",
+                        confirmButtonColor: "red"
+                    }).then(() => location.reload());
+                })
+                .catch(data => {
+                    Swal.fire({
+                        width: data.width || 600,
+                        title: data.title || "Error",
+                        text: data.text || "Terjadi kesalahan",
+                        icon: data.icon || "error",
+                        confirmButtonColor: "red"
+                    });
+                });
+            } else if (result.isDismissed) {
+                Swal.fire({
+                    width: 600,
+                    title: "Dibatalkan!",
+                    text: "Perubahan yang Anda lakukan tidak disimpan.",
+                    icon: "error",
+                    confirmButtonColor: "red"
+                });
+            }
+        });
+    });
+
+    // Detail Project
+    function openDetailProject(button) {
+        const modal = new bootstrap.Modal(
+            document.getElementById('DetailProject')
+        );
+
+        const statusMap = { 'ongoing': 'Ongoing', 'selesai': 'Selesai' };
+        const kontrakMap = { 'kontrak': 'Kontrak', 'belum_kontrak': 'Belum Kontrak' };
+
+        document.getElementById('detail_nama').value = button.dataset.nama;
+        document.getElementById('detail_kode_pekerjaan').value = button.dataset.kode_pekerjaan || '-';
+        document.getElementById('detail_instansi').value = button.dataset.instansi || '-';
+        document.getElementById('detail_daerah').value = button.dataset.daerah || '-';
+        document.getElementById('detail_mulai').value = button.dataset.mulai || '-';
+        document.getElementById('detail_akhir').value = button.dataset.akhir || '-';
+        document.getElementById('detail_perusahaan').value = button.dataset.perusahaan || '-';
+        document.getElementById('detail_perusahaan_administrasi').value = button.dataset.perusahaan_administrasi || '-';
+        document.getElementById('detail_dibuat_oleh').value = button.dataset.dibuat_oleh || '-';
+        document.getElementById('detail_status').value = statusMap[button.dataset.status] || '-';
+        document.getElementById('detail_status_kontrak').value = kontrakMap[button.dataset.status_kontrak] || '-';
+        document.getElementById('detail_deskripsi').value = button.dataset.deskripsi || '-';
+
+        modal.show();
+    }
+
+    // Pop Up Hapus
+    function confirmDeleteProject(button) {
+        const id = button.getAttribute('data-id');
+
+        Swal.fire({
+            title: 'Apakah Anda Yakin?',
+            text: "Anda tidak bisa memulihkan data ini!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Hapus!',
+            confirmButtonColor: 'red',
+            cancelButtonText: 'Tidak, Batal!',
+            iconColor: 'red',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/project/hapus/${id}/`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+                }).then(response => {
+                if (response.ok) {
+                    Swal.fire({
+                        title: 'Dihapus!',
+                        text: 'Data project telah dihapus.',
+                        icon: 'success',
+                        confirmButtonColor: 'red',
+                    }).then(() => {
+                        location.reload(); // Refresh the page after deletion
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'There was a problem deleting the project.',
+                        icon: 'error',
+                        confirmButtonColor: 'red',
+                        iconColor: 'red',
+                    });
+                }
+                });
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                Swal.fire({
+                    title: 'Dibatalkan',
+                    text: 'Data project Anda tetap aman :)',
+                    icon: 'error',
+                    confirmButtonColor: 'red',
+                    iconColor: 'red',
+                });
+            }
+        });
+    }
+
+    // Konfirmasi Edit Project
+    document.querySelector('#EditProjectForm').addEventListener('submit', function(event){
+        event.preventDefault()
+        Swal.fire({
+            width: 600,
+            title: "Konfirmasi Edit",
+            text: "Apakah Anda yakin ingin menyimpan perubahan?",
+            icon: "warning",
+            iconColor: "red",
+            showCancelButton: true,
+            confirmButtonColor: "red",
+            confirmButtonText: "Ya, Simpan!",
+            cancelButtonText: "Cancel",
+        }).then((result) => {
+            if(result.isConfirmed){
+                const formData = new FormData(this)
+                fetch("{% url 'edit_project' %}",{
+                    method:'POST',
+                    body:formData,
+                    headers:{
+                        'X-CSRFToken':'{{ csrf_token }}'
+                    }
+                })
+                .then(response=>{
+                    if(!response.ok){
+                        return response.json().then(data=>{throw data})
+                    }
+                    return response.json()
+                })
+                .then(data=>{
+                    Swal.fire({
+                        width:600,
+                        title:"Disimpan!",
+                        text:"Perubahan berhasil disimpan.",
+                        icon:"success",
+                        confirmButtonColor:"red"
+                    }).then(()=>{
+                        location.reload()
+                    })
+                })
+                .catch(data=>{
+                    Swal.fire({
+                        width:data.width || 600,
+                        title:data.title || "Error",
+                        text:data.text || "Terjadi kesalahan",
+                        icon:data.icon || "error",
+                        confirmButtonColor:"red"
+                    })
+                })
+            }
+            else if(result.isDismissed){
+                Swal.fire({
+                    width:600,
+                    title:"Dibatalkan!",
+                    text:"Perubahan yang Anda lakukan tidak disimpan.",
+                    icon:"error",
+                    confirmButtonColor:"red"
+                })
+            }
+        })
+    })
+</script>
+{% endblock %}
