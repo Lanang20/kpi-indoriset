@@ -625,7 +625,6 @@ def upload_tugas(request):
         subproject_id = request.POST.get("subproject")
         subproject = get_object_or_404(Subproject, id=subproject_id)
 
-        # Ambil drive_id dari perusahaan pegawai yang upload
         perusahaan = request.user.perusahaan
         drive_id = perusahaan.sharepoint_drive_id
 
@@ -634,15 +633,13 @@ def upload_tugas(request):
                 "message": "SharePoint perusahaan Anda belum dikonfigurasi. Hubungi administrator."
             }, status=400)
 
-        # Gunakan path custom atau default
         path = subproject.get_sharepoint_path()
-
         token = get_access_token()
+
         upload_url = (
             f"https://graph.microsoft.com/v1.0/drives/"
             f"{drive_id}/root:/{path}/{file.name}:/content"
         )
-
         headers = {
             "Authorization": f"Bearer {token}",
             "Content-Type": file.content_type
@@ -652,20 +649,20 @@ def upload_tugas(request):
             headers=headers,
             data=file.read()
         )
+
         if response.status_code in [200, 201]:
-            file_url = response.json().get("webUrl")
             tgl_upload = timezone.now()
             status_terlambat = "Ya" if tgl_upload > subproject.akhir else "Tidak"
             Tugas.objects.create(
                 subproject=subproject,
                 nama_file=file.name,
-                file_url=file_url,
                 tgl_upload=tgl_upload,
                 terlambat=status_terlambat
             )
             return JsonResponse({"message": "File berhasil diupload!"}, status=200)
         else:
             return JsonResponse({"message": "Upload gagal!"}, status=400)
+
     return JsonResponse({"message": "Invalid request"}, status=400)
 
 @login_required

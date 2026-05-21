@@ -1,232 +1,291 @@
-@import url('https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Poppins&display=swap');
-body {
-    font-family: 'Poppins', sans-serif;
-    padding-top: 120px;
+/* =====================================================
+   IndoRiset KPI — Landing Page (index.css)
+   ===================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+
+:root {
+  --red-50:  #fff5f5;
+  --red-100: #fee2e2;
+  --red-400: #f87171;
+  --red-500: #dc2626;
+  --red-700: #991b1b;
+  --dark-900: #0f0f14;
+  --dark-800: #17171e;
+  --dark-700: #21212a;
+  --dark-600: #2e2e3d;
+  --slate-300: #cbd5e1;
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+  --white: #ffffff;
+  --surface: #f4f6fb;
+  --shadow-red: 0 4px 24px rgba(220,38,38,.3);
 }
 
-/* CSS Untuk Navbar */
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  font-family:'Plus Jakarta Sans', sans-serif;
+  background: var(--white);
+  color: var(--slate-700);
+  padding-top: 72px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Navbar ─────────────────────────────────── */
 .custom-nav {
-    background-color: transparent;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    padding: 35px 70px;
-    z-index: 1000;
-    transition: 0.5s;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  padding: 14px 40px;
+  background: var(--white);                  /* always white */
+  border-bottom: 1px solid transparent;
+  z-index: 1000;
+  transition: border-color .3s, box-shadow .3s, padding .3s;
 }
 .custom-nav.sticky-navbar {
-    background-color: #ffffff;
-    padding: 10px 100px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  background: var(--white);                  /* still white when sticky */
+  border-bottom-color: #e2e8f0;
+  box-shadow: 0 1px 20px rgba(0,0,0,.07);
+  padding: 10px 40px;
 }
-.custom-nav .navbar-brand img {
-    width: 30px;
-    height: 30px;
-    margin-top: -7px;
+
+.custom-nav .navbar-brand {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none;
 }
+.custom-nav .navbar-brand img { width: 32px; height: 32px; object-fit: contain; }
 .custom-nav .navbar-brand span {
-    font-family: 'Caveat Brush', cursive;
-    color: red;
-    font-weight: 400;
-    font-size: 38px;
-    margin-left: 0.4em;
+  font-size: 1.1rem; font-weight: 800;
+  color: var(--dark-900); letter-spacing: .01em;
 }
-.custom-nav #navbarNav .navbar-nav .nav-item .nav-link {
-    color: rgba(0, 0, 0, 0.70);
-    font-weight: 400;
-    font-size: 17px;
-    margin-left: 2.4em;
-    transition: 0.3s color ease;
-}
-.custom-nav #navbarNav .navbar-nav .nav-item .nav-link:hover {
-    display: inline-block;
-    color: white;
-    background-color: red;
-    border-radius: 0.5em;
-    padding: 0.5em 1em;
-    text-decoration: none;
-    border: 1px solid transparent;
-    transition: 0.5s ease;
-    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.3);
-}
+.custom-nav .navbar-brand span strong { color: var(--red-500); }
 
-/* CSS untuk section Home */
-img#gambar-login {
-    margin-left: 50px;
-}
-.btn-modal-login {
-    display: inline-block;
-    color: white;
-    background-color: red;
-    border-radius: .4em;
-    padding: 0.5em 2em;
-    text-decoration: none;
-    border: 1px solid transparent;
-    transition: 0.5s ease;
-    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.3);
-}
-.btn-modal-login:hover {
-    background-color: red;
-    border-color: red;
-}
-.btn-modal-cancel {
-    color: red;
-    border: 1px solid red;
-    padding: 0.5em 2em;
-    background-color: transparent;
-    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-}
-.btn-modal-cancel:hover {
-    background-color: red;
-    border-color: red;
-    color: #ffffff;
-}
+/* ── Hero Section ───────────────────────────── */
 #Home {
-    margin-bottom: 50px;
-}
-#Home p {
-    font-size: 15px;
-    text-align: justify;
-}
-#Home h1 {
-    color: red;
-    font-size: 30px;
-}
-.btn-cancel {
-    display: inline-block;
-    color: red;
-    border: 1px solid red;
-    background-color: transparent;
-    border-radius: .4em;
-    padding: 0.5em 2em;
-    text-decoration: none;
-    transition: 0.5s ease;
-    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-}
-#Home .btn-login {
-    font-size: 15px;
-    color: red;
-    border: 1px solid red;
-    padding: 0.5em 2em;
-    background-color: transparent;
-    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-}
-#Home .btn-login:hover {
-    background-color: red;
-    border-color: red;
-    color: #ffffff;
+  min-height: calc(100vh - 72px);
+  display: flex; align-items: center;
+  background: var(--white);                  /* solid white */
+  position: relative; overflow: hidden;
 }
 
-/* CSS untuk section Alur */
+
+
+#Home .container { position: relative; z-index: 1; }
+
+#Home h1 {
+  font-size: clamp(1.75rem, 3.8vw, 2.5rem);
+  font-weight: 800; color: var(--dark-900);
+  line-height: 1.22; margin-bottom: 16px;
+}
+#Home h1 span { color: var(--red-500); }
+
+#Home p.lead {
+  font-size: .9rem; color: var(--slate-500);
+  line-height: 1.8; text-align: justify; margin-bottom: 28px;
+}
+
+#Home img.img-fluid {
+  max-height: 400px; width: 100%;
+  /* NO drop-shadow as requested */
+}
+
+/* ── CTA Button ── */
+.btn-login {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: .875rem; font-weight: 700;
+  padding: 12px 28px;
+  background: var(--red-500); color: var(--white);
+  border: none; border-radius: 9999px;
+  box-shadow: var(--shadow-red);
+  cursor: pointer; transition: all .2s ease;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: .03em;
+}
+.btn-login:hover {
+  background: var(--red-700); transform: translateY(-2px);
+  box-shadow: 0 6px 28px rgba(220,38,38,.4); color: var(--white);
+}
+
+/* ── Steps Section ──────────────────────────── */
 #Alur {
-    margin-bottom: 50px;
+  padding: 80px 0;
+  background: var(--dark-900);
+  position: relative; overflow: hidden;
+}
+#Alur::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--red-700), var(--red-400), var(--red-700));
 }
 #Alur h1 {
-    text-align: center;
-    font-size: 30px;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 800; color: var(--white);
+  text-align: center; margin-bottom: 8px;
 }
-#Alur p {
-    font-size: 15px;
-    text-align: justify;
+#Alur > .container > p.lead {
+  color: var(--slate-400); text-align: center;
+  font-size: .9rem; margin-bottom: 52px;
 }
+
+/* Timeline */
 .teladan {
-    position: relative;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px 0;
+  position: relative; max-width: 740px;
+  margin: 0 auto; padding: 10px 0;
 }
 .teladan::before {
-    content: '';
-    position: absolute;
-    width: 4px;
-    background-color: #dc3545;
-    top: 0;
-    bottom: 0;
-    left: 25px;
-    margin-left: -2px;
+  content: '';
+  position: absolute; left: 29px; top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, transparent, var(--red-700) 10%, var(--red-700) 90%, transparent);
 }
 .teladan-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 30px;
-    position: relative;
+  display: flex; align-items: flex-start;
+  gap: 22px; margin-bottom: 36px; position: relative;
 }
 .teladan-icon {
-    flex: 0 0 50px;
-    height: 50px;
-    background: #f8d7da;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 24px;
-    color: #dc3545;
-    margin-right: 20px;
-    position: relative;
-    z-index: 1;
+  flex-shrink: 0; width: 60px; height: 60px;
+  background: var(--dark-800);
+  border: 2px solid var(--dark-600);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.25rem; color: var(--red-400);
+  position: relative; z-index: 1;
+  transition: all .2s ease;
+}
+.teladan-item:hover .teladan-icon {
+  background: var(--red-700); color: var(--white);
+  border-color: var(--red-500); box-shadow: var(--shadow-red);
 }
 .teladan-number {
-    position: absolute;
-    top: -15px;
-    left: -15px;
-    background: #dc3545;
-    color: #fff;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: bold;
+  position: absolute; top: -8px; right: -8px;
+  background: var(--red-500); color: var(--white);
+  border-radius: 50%; width: 22px; height: 22px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .66rem; font-weight: 800; border: 2px solid var(--dark-900);
 }
 .teladan-content {
-    background: #f8f9fa;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    position: relative;
-    z-index: 1;
+  background: var(--dark-800);
+  border: 1px solid var(--dark-600);
+  border-radius: 14px; padding: 20px 22px; flex: 1;
+  transition: all .2s ease;
 }
-.teladan-content h3 {
-    margin-top: 0;
+.teladan-item:hover .teladan-content {
+  border-color: var(--dark-600);
+  box-shadow: 0 4px 20px rgba(0,0,0,.3);
+}
+.teladan-content h3 { font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 7px; }
+.teladan-content p  { font-size: .855rem; color: var(--slate-400); line-height: 1.7; margin: 0; }
+
+/* ── Footer ─────────────────────────────────── */
+footer {
+  background: var(--dark-900) !important;    /* matches #Alur dark section */
+  border-top: 1px solid var(--dark-600) !important;
+  padding: 22px 0;
+}
+footer .container {
+  display: flex; flex-wrap: wrap;
+  justify-content: space-between; align-items: center;
+  gap: 12px;
+}
+footer span {
+  font-size: .8rem; color: var(--slate-400); font-weight: 400;
+}
+footer .nav { list-style: none; display: flex; gap: 18px; margin: 0; padding: 0; }
+footer .nav a { color: var(--slate-400); text-decoration: none; transition: color .15s; font-size: .95rem; }
+footer .nav a:hover { color: var(--white); }
+
+/* ── Modal Login ─────────────────────────────── */
+/* Outer wrapper: fully transparent so white card shows cleanly */
+.modal-content-wrapper {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
-/* Responsive */
+/* The actual card inside modal */
+.login-card {
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 24px 64px rgba(0,0,0,.14);
+  background: var(--white);                  /* white */
+}
+
+/* Left illustration pane — white */
+.login-illustration {
+  background: var(--white);
+  padding: 36px 28px;
+  display: flex; align-items: center; justify-content: center;
+  border-right: 1px solid #e2e8f0;
+}
+.login-illustration img { max-width: 200px; width: 100%; margin-bottom: 18px; }
+.login-illustration p   { color: var(--slate-500); font-size: .8rem; line-height: 1.65; text-align: center; margin: 0; }
+
+/* Right form pane */
+.login-form-pane {
+  background: var(--white);                  /* white */
+  padding: 36px 32px;
+}
+
+/* Buttons inside modal */
+.btn-modal-login {
+  display: block; width: 100%;
+  background: var(--red-500); color: var(--white);
+  border: none; border-radius: 8px;
+  padding: 11px; font-weight: 700; font-size: .875rem;
+  transition: all .2s ease; cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.btn-modal-login:hover {
+  background: var(--red-700); color: var(--white);
+  transform: translateY(-1px); box-shadow: var(--shadow-red);
+}
+.btn-modal-cancel {
+  background: transparent; color: var(--red-500);
+  border: 1.5px solid var(--red-200, #fca5a5);
+  border-radius: 8px; padding: 11px 20px;
+  font-weight: 700; font-size: .875rem;
+  transition: all .2s ease; cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  white-space: nowrap;
+}
+.btn-modal-cancel:hover {
+  background: var(--red-50); color: var(--red-700);
+  border-color: var(--red-700);
+}
+
+/* Form controls */
+.form-control {
+  border: 1.5px solid #e2e8f0; border-radius: 8px;
+  padding: 10px 13px; font-size: .875rem;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: border-color .15s, box-shadow .15s;
+  background: var(--white);
+}
+.form-control:focus {
+  border-color: #f87171;
+  box-shadow: 0 0 0 3px rgba(220,38,38,.1);
+  outline: none;
+}
+.form-label {
+  font-size: .73rem; font-weight: 700; color: #475569;
+  letter-spacing: .05em; text-transform: uppercase; margin-bottom: 5px;
+}
+
+/* ── Responsive ─────────────────────────────── */
+@media (max-width: 768px) {
+  body { padding-top: 66px; }
+  .custom-nav, .custom-nav.sticky-navbar { padding: 10px 18px; }
+  #Home { padding: 40px 0; min-height: auto; }
+  #Home::before { display: none; }
+  #Alur { padding: 60px 0; }
+  .teladan::before { left: 24px; }
+  .teladan-icon { width: 50px; height: 50px; font-size: 1.1rem; }
+  .login-form-pane { padding: 24px 20px; }
+}
 @media (max-width: 480px) {
-    body {
-        padding-top: 80px;
-    }
-    #Home img {
-        margin-left: 35px;
-    }
-    .custom-nav {
-        background-color: #ffffff;
-        padding: 8px 10px;
-    }
-    .custom-nav.sticky-navbar {
-        background-color: #ffffff;
-        padding: 8px 10px;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-    }
-    .custom-nav .navbar-brand span {
-        font-size: 30px;
-    }
-}
-
-@media (min-width: 768px) and (max-width: 1024px) {
-    #Home img {
-        margin-left: 120px;
-    }
-    .col-md-6 {
-        width: 100%;
-    }
-    img#gambar-login {
-        width: 300px;
-        margin-left: 70px;
-    }
-    .custom-nav {
-        background-color: #ffffff;
-        padding: 8px 10px;
-    }
+  .custom-nav .navbar-brand span { font-size: .95rem; }
+  footer .container { justify-content: center; text-align: center; }
 }

@@ -1,109 +1,76 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KPI-IndoRiset | Landing Page</title>
+    <title>KPI IndoRiset Grup</title>
     <link rel="shortcut icon" href="{% static 'images/logo.png' %}">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link href="{% static 'css/index.css' %}" rel="stylesheet">
 </head>
 <body>
-    <!-- Navbar -->
-    <div class="container my-4">
-        <nav class="navbar navbar-expand-lg navbar-light custom-nav">
+
+    <!-- ══════════ NAVBAR ══════════ -->
+    <nav class="custom-nav navbar navbar-expand-lg" id="mainNav">
+        <div class="container-fluid">
             <a class="navbar-brand" href="#">
-                <span><img src="{% static 'images/logo.png' %}" alt="logo-dinporapar" width="47" height="49"></img> KPI IndoRiset Grup</span>
+                <img src="{% static 'images/logo.png' %}" alt="logo" width="32" height="32">
+                <span>KPI&nbsp;<strong>IndoRiset Grup</strong></span>
             </a>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-            </div>
-        </nav>
-    </div>
-    <!-- Home -->
+        </div>
+    </nav>
+
+    <!-- ══════════ HERO ══════════ -->
     <section id="Home">
-        <div class="container col-xxl-8 px-4 py-12">
-            <div class="row flex-lg-row-reverse align-items-center g-5 py-12">
-                <div class="col-10 col-sm-8 col-lg-6">
-                    <img src="{% static 'images/gambar-home.svg' %}" class="d-block mx-lg-auto img-fluid" alt="gambar-home" width="450" height="450" loading="lazy">
+        <div class="container col-xxl-10 px-4">
+            <div class="row flex-lg-row-reverse align-items-center g-5">
+
+                <!-- Illustration — no shadow -->
+                <div class="col-10 col-sm-8 col-lg-5 mx-auto mx-lg-0">
+                    <img src="{% static 'images/gambar-home.svg' %}" class="d-block img-fluid"
+                        alt="ilustrasi-kpi" loading="lazy"
+                        style="max-height:400px;width:100%;">
                 </div>
-                <div class="col-lg-6">
-                    <h1 class="display-5 fw-bold lh-2 mb-3">
-                        Selamat Datang di Sistem KPI (Key Performance Indicator) IndoRiset Grup!
+
+                <!-- Text -->
+                <div class="col-lg-7">
+                    <div class="mb-3">
+                        <span style="background:var(--red-100);color:var(--red-700);
+                            font-size:.72rem;font-weight:700;letter-spacing:.08em;
+                            padding:5px 14px;border-radius:9999px;text-transform:uppercase;">
+                            Sistem KPI Digital
+                        </span>
+                    </div>
+                    <h1>
+                        Selamat Datang di<br>
+                        <span>Sistem KPI (Key Performance Indicator)</span> IndoRiset Grup<br>
                     </h1>
                     <p class="lead">
-                        Sistem ini dirancang untuk membantu manajemen dan tim dalam mengelola proyek secara lebih efektif, 
-                        mulai dari perencanaan kegiatan, penugasan pekerjaan, pengumpulan laporan, hingga proses evaluasi kinerja. 
-                        Dengan sistem ini, setiap proyek dapat dipantau secara transparan sehingga mendukung peningkatan kualitas pekerjaan dan ketepatan waktu penyelesaian tugas.
+                        Sistem ini dirancang untuk membantu manajemen dan tim dalam mengelola proyek secara lebih efektif,
+                        mulai dari perencanaan kegiatan, penugasan pekerjaan, pengumpulan laporan, hingga proses evaluasi kinerja.
+                        Dengan sistem ini, setiap proyek dapat dipantau secara transparan sehingga mendukung peningkatan
+                        kualitas pekerjaan dan ketepatan waktu penyelesaian tugas.
                     </p>
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-                        <button type="button" class="btn btn-primary btn-sm btn-login px-4 me-md-2" 
-                        data-bs-toggle="modal" data-bs-target="#exampleModal4" data-bs-whatever="@mdo"><i class="fa-solid fa-xl fa-arrow-right-to-bracket"></i> Login</button>
-                    </div>
-                    <!-- Modal Login -->
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-                        <div class="modal fade" id="exampleModal4" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered modal-xl bg-transparent" style="border: none;">
-                                <div class="modal-content bg-transparent" style="border: none;">
-                                    <div class="modal-body bg-transparent" style="border: none;">
-                                        <div class="container py-5 h-100">
-                                            <div class="row d-flex justify-content-center align-items-center h-100">
-                                                <div class="col col-xl-10">
-                                                    <div class="card shadow" style="border-radius: 1rem;">
-                                                        <div class="row g-5">
-                                                            <div class="col-md-6 col-lg-5 d-none d-md-block">
-                                                                <img id="gambar-login" src="{% static 'images/login.svg' %}" alt="ilustrasi-login" class="img-fluid">
-                                                            </div>
-                                                            <div class="col-md-6 col-lg-7 d-flex align-items-center">
-                                                                <div class="card-body p-4 p-lg-5 text-black">
-                                                                    <form method="post" action="{% url 'login' %}">
-                                                                        {% csrf_token %}
-                                                                        <h5 class="h5-login mb-3">Silahkan login ke akun anda</h5>
-                                                                        {% if msg %}
-                                                                            <div class="alert alert-danger col-10" role="alert">
-                                                                                {{ msg }}
-                                                                            </div>
-                                                                        {% endif %}
-                                                                        <div class="mb-1 col-10">
-                                                                            <label for="username-login" class="col-form-label">Username</label>
-                                                                            <input type="text" name="username" class="form-control" id="username-login" required>
-                                                                        </div>
-                                                                        <div class="mb-3 col-10">
-                                                                            <label for="password-login" class="col-form-label">Password</label>
-                                                                            <input type="password" name="password" class="form-control" id="password-login" required>
-                                                                        </div>
-                                                                        <div class="mb-3">
-                                                                            <button type="submit" class="btn btn-danger btn-sm btn-modal-login px-4 me-md-2">Login</button>
-                                                                            <button type="button" class="btn btn-danger btn-modal-cancel btn-sm px-4" data-bs-dismiss="modal">Cancel</button>
-                                                                        </div>
-                                                                    </form>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <button type="button" class="btn-login"
+                        data-bs-toggle="modal" data-bs-target="#modalLogin">
+                        <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                        Masuk ke Sistem
+                    </button>
                 </div>
+
             </div>
         </div>
     </section>
-    <!-- Alur -->
+
+    <!-- ══════════ STEPS ══════════ -->
     <section id="Alur">
-        <div class="container col-xxl-8 px-4 py-12">
-            <h1 class="display-5 fw-bold lh-2 mb-3">
-                Menjadi Karyawan Teladan
-            </h1>
-            <p class="lead" style="text-align: center;">
-                Bangun performa terbaik dan tingkatkan kontribusi Anda di perusahaan.
-            </p>
+        <div class="container col-xxl-9 px-4">
+            <h1>Menjadi Karyawan Teladan</h1>
+            <p class="lead">Bangun performa terbaik dan tingkatkan kontribusi Anda di perusahaan.</p>
+
             <div class="teladan">
                 <div class="teladan-item">
                     <div class="teladan-icon">
@@ -112,10 +79,7 @@
                     </div>
                     <div class="teladan-content">
                         <h3>Disiplin Waktu</h3>
-                        <p>
-                            Menjalankan tugas sesuai deadline menunjukkan 
-                            profesionalisme dan meningkatkan kepercayaan dalam tim maupun perusahaan.
-                        </p>
+                        <p>Menjalankan tugas sesuai deadline menunjukkan profesionalisme dan meningkatkan kepercayaan dalam tim maupun perusahaan.</p>
                     </div>
                 </div>
                 <div class="teladan-item">
@@ -125,9 +89,7 @@
                     </div>
                     <div class="teladan-content">
                         <h3>Produktivitas Tinggi</h3>
-                        <p>
-                            Fokus pada hasil kerja yang optimal serta konsisten dalam menyelesaikan pekerjaan dengan kualitas terbaik.
-                        </p>
+                        <p>Fokus pada hasil kerja yang optimal serta konsisten dalam menyelesaikan pekerjaan dengan kualitas terbaik.</p>
                     </div>
                 </div>
                 <div class="teladan-item">
@@ -137,9 +99,7 @@
                     </div>
                     <div class="teladan-content">
                         <h3>Kerja Sama Tim</h3>
-                        <p>
-                            Mampu berkolaborasi dengan baik untuk mencapai tujuan bersama dan menciptakan lingkungan kerja yang harmonis.
-                        </p>
+                        <p>Mampu berkolaborasi dengan baik untuk mencapai tujuan bersama dan menciptakan lingkungan kerja yang harmonis.</p>
                     </div>
                 </div>
                 <div class="teladan-item">
@@ -148,64 +108,144 @@
                         <i class="fa-regular fa-lightbulb"></i>
                     </div>
                     <div class="teladan-content">
-                        <h3>Inisiatif & Inovasi</h3>
-                        <p>
-                            Selalu proaktif dalam mencari solusi dan memberikan ide baru untuk meningkatkan efisiensi serta kinerja perusahaan.
-                        </p>
+                        <h3>Inisiatif &amp; Inovasi</h3>
+                        <p>Selalu proaktif dalam mencari solusi dan memberikan ide baru untuk meningkatkan efisiensi serta kinerja perusahaan.</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-    <!-- Footer -->
-    <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 bg-dark border-top">
-        <div class="container d-flex justify-content-between">
-            <div class="col-md-4 d-flex align-items-center">
-                <a href="/" class="mb-3 me-2 mb-md-0 text-white text-decoration-none lh-1">
-                    <!-- <img src="{% static 'images/logo.png' %}" alt="logo-dinporapar" width="45" height="47"></img> -->
-                </a>
-                <span class="mb-3 mb-md-0 text-white fw-light" style="font-size: 13.5px;">
-                    IndoRiset Grup &copy; 2026. <br>PT. Indo Riset Strategis, PT. Koopillar.
-                </span>
-            </div>   
-            <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">
-                <li class="ms-3">
-                    <a class="text-white" href="#">
-                        <i class="fa-brands fa-lg fa-x-twitter"></i>
-                    </a>
-                </li>
-                <li class="ms-3">
-                    <a class="text-white" href="https://www.facebook.com/people/INDORISETid/61552928267923/">
-                        <i class="fa-brands fa-lg fa-square-facebook"></i>
-                    </a>
-                </li>
-                <li class="ms-3">
-                    <a class="text-white" href="https://www.instagram.com/indoriset.id/">
-                        <i class="fa-brands fa-lg fa-instagram"></i>
-                    </a>
-                </li>
+
+    <!-- ══════════ FOOTER ══════════
+         Same dark tone as #Alur, separated by border-top
+    ════════════════════════════════ -->
+    <footer>
+        <div class="container">
+            <span>&copy; 2026 IndoRiset Grup &mdash; PT. Indo Riset Strategis, PT. Koopillar.</span>
+            <ul class="nav">
+                <li><a href="#" title="X / Twitter"><i class="fa-brands fa-x-twitter"></i></a></li>
+                <li><a href="https://www.facebook.com/people/INDORISETid/61552928267923/" title="Facebook"><i class="fa-brands fa-square-facebook"></i></a></li>
+                <li><a href="https://www.instagram.com/indoriset.id/" title="Instagram"><i class="fa-brands fa-instagram"></i></a></li>
             </ul>
         </div>
     </footer>
-    <script>
-        // Menampilkan kembali modal jika terjadi kesalahan login
-        document.addEventListener('DOMContentLoaded', function () {
-            var modal = new bootstrap.Modal(document.getElementById('exampleModal4'));
 
-            // Periksa apakah pesan error ada pada modal
-            var errorAlert = document.querySelector('.alert-danger');
-            if (errorAlert) {
-                modal.show();
+    <!-- ══════════ MODAL LOGIN ══════════ -->
+    <div class="modal fade" id="modalLogin" tabindex="-1" aria-labelledby="loginLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width:820px;">
+            <div class="modal-content modal-content-wrapper">
+                <div class="modal-body p-3">
+                    <div class="login-card">
+                        <div class="row g-0">
+
+                            <!-- Left: illustration pane (dark) -->
+                            <div class="col-md-5 d-none d-md-flex flex-column align-items-center justify-content-center login-illustration">
+                                <img src="{% static 'images/login.svg' %}" alt="login illustration">
+                                <p>Masuk untuk memantau kinerja proyek dan tim Anda secara real-time.</p>
+                            </div>
+
+                            <!-- Right: form pane (white) -->
+                            <div class="col-md-7 col-12 login-form-pane">
+
+                                <!-- Brand -->
+                                <div class="d-flex align-items-center gap-2 mb-4">
+                                    <img src="{% static 'images/logo.png' %}" alt="logo" width="30" height="30">
+                                    <span style="font-size:1rem;font-weight:800;color:#111115;">KPI&nbsp;<strong style="color:var(--red-500);">IndoRiset Grup</strong></span>
+                                </div>
+
+                                <h5 id="loginLabel" style="font-size:1.2rem;font-weight:800;color:#111115;margin-bottom:4px;">
+                                    Selamat Datang Kembali
+                                </h5>
+                                <p style="font-size:.82rem;color:#64748b;margin-bottom:24px;">
+                                    Silahkan login ke akun Anda untuk melanjutkan.
+                                </p>
+
+                                {% if msg %}
+                                <div style="background:#fff5f5;color:#991b1b;border-left:4px solid #dc2626;
+                                    border-radius:8px;font-size:.84rem;padding:10px 14px;margin-bottom:16px;">
+                                    <i class="fas fa-exclamation-circle me-2"></i>{{ msg }}
+                                </div>
+                                {% endif %}
+
+                                <form method="post" action="{% url 'login' %}">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <label class="form-label">Username</label>
+                                        <div style="position:relative;">
+                                            <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#94a3b8;pointer-events:none;">
+                                                <i class="fas fa-user fa-sm"></i>
+                                            </span>
+                                            <input type="text" name="username" class="form-control"
+                                                style="padding-left:36px;" autocomplete="username" required>
+                                        </div>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label class="form-label">Password</label>
+                                        <div style="position:relative;">
+                                            <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#94a3b8;pointer-events:none;">
+                                                <i class="fas fa-lock fa-sm"></i>
+                                            </span>
+                                            <input type="password" name="password" id="loginPassword" class="form-control"
+                                                style="padding-left:36px;" autocomplete="current-password" required>
+                                            <button type="button" onclick="togglePwd()"
+                                                style="position:absolute;right:12px;top:50%;transform:translateY(-50%);
+                                                background:none;border:none;color:#94a3b8;cursor:pointer;padding:0;">
+                                                <i class="fas fa-eye fa-sm" id="eyeIcon"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex gap-2 align-items-center">
+                                        <button type="submit" class="btn-modal-login flex-grow-1">
+                                            <i class="fas fa-sign-in-alt me-2"></i>Login
+                                        </button>
+                                        <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">
+                                            Batal
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    <script>
+        /* Auto-open modal on login error */
+        document.addEventListener('DOMContentLoaded', function () {
+            if (document.querySelector('[data-login-error]')) {
+                new bootstrap.Modal(document.getElementById('modalLogin')).show();
             }
         });
 
-        // Navbar
-        window.addEventListener('scroll', function(){
-            var navbar = document.querySelector('.custom-nav');
-            navbar.classList.toggle('sticky-navbar', window.scrollY > 0);
+        /* Navbar sticky — always white, just adds shadow */
+        window.addEventListener('scroll', function () {
+            document.getElementById('mainNav').classList.toggle('sticky-navbar', window.scrollY > 10);
         });
+
+        /* Toggle password visibility */
+        function togglePwd() {
+            const inp = document.getElementById('loginPassword');
+            const ico = document.getElementById('eyeIcon');
+            if (inp.type === 'password') {
+                inp.type = 'text';
+                ico.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                inp.type = 'password';
+                ico.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+
+        /* Re-open modal if Django returned login error via template tag */
+        {% if msg %}
+        document.addEventListener('DOMContentLoaded', function () {
+            new bootstrap.Modal(document.getElementById('modalLogin')).show();
+        });
+        {% endif %}
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" 
-        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
 </body>
 </html>

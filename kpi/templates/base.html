@@ -12,6 +12,18 @@
     <link href="{% static 'css/dashboard.css' %}" rel="stylesheet">
     <title>{% block title %}Dashboard | IndoRiset Grup{% endblock %}</title>
     <link rel="shortcut icon" href="{% static 'images/logo.png' %}">
+    <style>
+        body { overflow-x: hidden; }
+        /* Fix: main harus position:fixed-height agar sticky topbar bekerja */
+        .pembungkus {
+            display: flex;
+            height: 100vh;
+        }
+        .main {
+            overflow-y: auto;
+            height: 100vh;
+        }
+    </style>
 </head>
 <body>
     <!-- =============== Navigation ================ -->
@@ -21,7 +33,7 @@
                 <li>
                     <a href="#">
                         <span class="icon"><img src="{% static 'images/logo.png' %}" alt="logo-indorisetgrup" width="37" height="39"></img></span>
-                        <span class="titleMain">IndoRiset Grup</span>
+                        <span class="titleMain">KPI&nbsp;<strong>IndoRiset Grup</strong></span>
                     </a>
                 </li>
                 <li>
@@ -149,10 +161,9 @@
             main.classList.toggle("active");
         };
 
-        // Navbar
-        window.addEventListener('scroll', function(){
-            var navbar = document.querySelector('.topbar');
-            navbar.classList.toggle('sticky-topbar', window.scrollY > 0);
+        // Navbar — scroll terjadi di dalam .main, bukan window
+        document.querySelector('.main').addEventListener('scroll', function(){
+            document.querySelector('.topbar').classList.toggle('sticky-topbar', this.scrollTop > 0);
         });
 
         // Calendar

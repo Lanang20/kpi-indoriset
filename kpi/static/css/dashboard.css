@@ -1,13 +1,12 @@
 /* =========== Google Fonts ============ */
-@import url("https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap");
-@import url('https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Poppins&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Caveat+Brush&display=swap');
 
 /* =============== Globals ============== */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "Ubuntu", sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
 }
 :root {
     --blue: #3843D6;
@@ -39,7 +38,9 @@ body {
     border-left: 10px solid var(--black1);
     transition: 0.5s;
     overflow: hidden;
+    z-index: 1000;
 }
+/* Desktop: active = collapse ke 80px */
 .navigation.active {
     width: 80px;
 }
@@ -72,9 +73,8 @@ body {
 
 .navigation ul li a {
     position: relative;
-    display: block;
-    width: 100%;
     display: flex;
+    width: 100%;
     text-decoration: none;
     color: var(--white);
 }
@@ -103,17 +103,32 @@ body {
     line-height: 60px;
     text-align: start;
     white-space: nowrap;
+    font-weight: 500;
 }
+
+/* Brand sidebar — sama dengan index.html */
+.navigation ul li:nth-child(1) a .icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
 .navigation ul li a .titleMain {
-    font-family: 'Caveat Brush', cursive;
-    font-size: 30px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: 0.01em;
     position: relative;
-    display: block;
+    display: flex;
+    align-items: center;
     padding: 0 10px;
     height: 60px;
-    line-height: 75px;
-    text-align: start;
+    line-height: 1;
     white-space: nowrap;
+}
+.navigation ul li a .titleMain strong {
+    color: #dc2626;
 }
 
 /* --------- curve outside ---------- */
@@ -145,6 +160,7 @@ body {
 }
 
 /* ===================== Main ===================== */
+/* Desktop default: sidebar penuh 300px */
 .main {
     position: absolute;
     width: calc(100% - 300px);
@@ -152,25 +168,13 @@ body {
     min-height: 100vh;
     background: var(--white);
     transition: 0.5s;
+    overflow-x: hidden;
 }
+/* Desktop active: sidebar collapse 80px */
 .main.active {
     width: calc(100% - 80px);
     left: 80px;
 }
-.topbar {
-    width: 100%;
-    height: 60px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 10px;
-}
-.topbar .sticky-topbar {
-    background-color: #ffffff;
-    padding: 10px 100px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-}
-
 
 .topbar {
     position: sticky;
@@ -204,7 +208,6 @@ body {
     align-items: center;
     transition: color 0.3s;
 }
-
 .topbar-icon-profile:hover {
     color: #dc3545;
 }
@@ -214,12 +217,11 @@ body {
     align-items: center;
     gap: 6px;
     font-size: 0.9rem;
+    font-weight: 600;
 }
-
 .topbar-logout i {
     font-size: 0.9rem;
 }
-
 
 .toggle {
     position: relative;
@@ -234,21 +236,13 @@ body {
 
 /* ======================= Kartu ====================== */
 @keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
-
 .kartu {
     opacity: 0;
     animation: fadeInUp 2s forwards;
 }
-
 .kartu.animated {
     opacity: 1;
 }
@@ -260,7 +254,6 @@ body {
     grid-template-columns: repeat(4, 1fr);
     grid-gap: 30px;
 }
-
 .kartuBox .kartu {
     position: relative;
     background: var(--white);
@@ -271,25 +264,22 @@ body {
     cursor: pointer;
     box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
 }
-
 .kartuBox .kartu .numbers {
     position: relative;
-    font-weight: 500;
+    font-weight: 700;
     font-size: 2.5rem;
     color: var(--black1);
 }
-
 .kartuBox .kartu .kartuName {
     color: var(--black2);
-    font-size: 1.1rem;
+    font-size: 1rem;
     margin-top: 5px;
+    font-weight: 500;
 }
-
 .kartuBox .kartu .iconBx {
     font-size: 3.5rem;
     color: var(--black2);
 }
-
 .kartuBox .kartu:hover {
     background: var(--black1);
 }
@@ -305,52 +295,36 @@ body {
     width: 100%;
     padding: 20px;
     display: flex;
-    /* margin-top: 10px; */
 }
-
 .kalender .cardKalender {
     position: relative;
     min-height: 500px;
-    width: 100vw;
+    width: 100%;
     background: var(--white);
     padding: 20px;
     box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
     border-radius: 20px;
+    overflow-x: auto;
 }
-
 .kalender .cardHeader {
     justify-content: space-between;
     align-items: flex-start;
 }
-
-/* Mengubah warna teks dan menghapus garis bawah pada elemen FullCalendar akibat boostrap */
-.fc a {
-    color: inherit;
-    text-decoration: none;
-}
-/* Menambahkan ikon klik pada cursor mouse ketika di atas event */
-.fc-event {
-    cursor: pointer;
-}
-/* CSS untuk mengatur popover akibat efek css Main */
+.fc a { color: inherit; text-decoration: none; }
+.fc-event { cursor: pointer; }
 .fc .fc-popover {
     position: absolute;
-    top: 50%; /* Menempatkan popover di tengah layar secara vertikal */
-    left: 50%; /* Menempatkan popover di tengah layar secara horizontal */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Memberikan bayangan agar popover terlihat seperti modal */
-    background: white; /* Background putih untuk popover */
+    top: 50%;
+    left: 50%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background: white;
 }
-/* Mengubah warna teks "1+ more" menjadi biru */
-.fc-direction-ltr .fc-daygrid-more-link {
-    color: blue;
-}
+.fc-direction-ltr .fc-daygrid-more-link { color: blue; }
 .filter {
     display: flex;
     justify-content: space-between;
 }
-.filter select {
-    width: auto;
-}
+.filter select { width: auto; }
 
 /* ================== Role ============== */
 .role {
@@ -358,29 +332,23 @@ body {
     width: 100%;
     padding: 20px;
     display: flex;
-    /* margin-top: 10px; */
 }
-
 .role .cardRole {
     position: relative;
     min-height: 500px;
-    width: 100vw;
+    width: 100%;
     background: var(--white);
     padding: 20px;
     box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
     border-radius: 20px;
+    overflow-x: auto;
 }
-
 .table-role td .description {
-    white-space: pre-wrap; /* Preserves spaces and line breaks */
-    word-wrap: break-word; /* Memastikan teks tidak melampaui batas kolom */
-    overflow-wrap: break-word; /* Memastikan teks tidak melampaui batas kolom */
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
-
-.role .cardHeader {
-    justify-content: space-between;
-    align-items: flex-start;
-}
+.role .cardHeader { justify-content: space-between; align-items: flex-start; }
 
 /* ================== Pegawai ============== */
 .pegawai {
@@ -388,29 +356,23 @@ body {
     width: 100%;
     padding: 20px;
     display: flex;
-    /* margin-top: 10px; */
 }
-
 .pegawai .cardPegawai {
     position: relative;
     min-height: 500px;
-    width: 100vw;
+    width: 100%;
     background: var(--white);
     padding: 20px;
     box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
     border-radius: 20px;
+    overflow-x: auto;
 }
-
 .table-pegawai td .description {
-    white-space: pre-wrap; /* Preserves spaces and line breaks */
-    word-wrap: break-word; /* Memastikan teks tidak melampaui batas kolom */
-    overflow-wrap: break-word; /* Memastikan teks tidak melampaui batas kolom */
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
-
-.pegawai .cardHeader {
-    justify-content: space-between;
-    align-items: flex-start;
-}
+.pegawai .cardHeader { justify-content: space-between; align-items: flex-start; }
 
 /* ================== Project ============== */
 .project {
@@ -418,29 +380,23 @@ body {
     width: 100%;
     padding: 20px;
     display: flex;
-    /* margin-top: 10px; */
 }
-
 .project .cardProject {
     position: relative;
     min-height: 500px;
-    width: 100vw;
+    width: 100%;
     background: var(--white);
     padding: 20px;
     box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
     border-radius: 20px;
+    overflow-x: auto;
 }
-
 .table-project td .description {
-    white-space: pre-wrap; /* Preserves spaces and line breaks */
-    word-wrap: break-word; /* Memastikan teks tidak melampaui batas kolom */
-    overflow-wrap: break-word; /* Memastikan teks tidak melampaui batas kolom */
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
-
-.project .cardHeader {
-    justify-content: space-between;
-    align-items: flex-start;
-}
+.project .cardHeader { justify-content: space-between; align-items: flex-start; }
 
 /* ================== SubProject ============== */
 .subproject {
@@ -448,29 +404,23 @@ body {
     width: 100%;
     padding: 20px;
     display: flex;
-    /* margin-top: 10px; */
 }
-
 .subproject .cardSubProject {
     position: relative;
     min-height: 500px;
-    width: 100vw;
+    width: 100%;
     background: var(--white);
     padding: 20px;
     box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
     border-radius: 20px;
+    overflow-x: auto;
 }
-
 .table-subproject td .description {
-    white-space: pre-wrap; /* Preserves spaces and line breaks */
-    word-wrap: break-word; /* Memastikan teks tidak melampaui batas kolom */
-    overflow-wrap: break-word; /* Memastikan teks tidak melampaui batas kolom */
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
-
-.subproject .cardHeader {
-    justify-content: space-between;
-    align-items: flex-start;
-}
+.subproject .cardHeader { justify-content: space-between; align-items: flex-start; }
 
 /* ================== Tugas ============== */
 .tugas {
@@ -478,29 +428,23 @@ body {
     width: 100%;
     padding: 20px;
     display: flex;
-    /* margin-top: 10px; */
 }
-
 .tugas .cardTugas {
     position: relative;
     min-height: 500px;
-    width: 100vw;
+    width: 100%;
     background: var(--white);
     padding: 20px;
     box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
     border-radius: 20px;
+    overflow-x: auto;
 }
-
 .table-tugas td .description {
-    white-space: pre-wrap; /* Preserves spaces and line breaks */
-    word-wrap: break-word; /* Memastikan teks tidak melampaui batas kolom */
-    overflow-wrap: break-word; /* Memastikan teks tidak melampaui batas kolom */
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
-
-.tugas .cardHeader {
-    justify-content: space-between;
-    align-items: flex-start;
-}
+.tugas .cardHeader { justify-content: space-between; align-items: flex-start; }
 
 /* ================== Review ============== */
 .review {
@@ -508,59 +452,47 @@ body {
     width: 100%;
     padding: 20px;
     display: flex;
-    /* margin-top: 10px; */
 }
-
 .review .cardReview {
     position: relative;
     min-height: 500px;
-    width: 100vw;
+    width: 100%;
     background: var(--white);
     padding: 20px;
     box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
     border-radius: 20px;
+    overflow-x: auto;
 }
-
 .table-review td .description {
-    white-space: pre-wrap; /* Preserves spaces and line breaks */
-    word-wrap: break-word; /* Memastikan teks tidak melampaui batas kolom */
-    overflow-wrap: break-word; /* Memastikan teks tidak melampaui batas kolom */
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
+.review .cardHeader { justify-content: space-between; align-items: flex-start; }
 
-.review .cardHeader {
-    justify-content: space-between;
-    align-items: flex-start;
-}
-
-/* ================== kpi ============== */
+/* ================== KPI ============== */
 .kpi {
     position: relative;
     width: 100%;
     padding: 20px;
     display: flex;
-    /* margin-top: 10px; */
 }
-
 .kpi .cardKPI {
     position: relative;
     min-height: 500px;
-    width: 100vw;
+    width: 100%;
     background: var(--white);
     padding: 20px;
     box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
     border-radius: 20px;
+    overflow-x: auto;
 }
-
 .table-kpi td .description {
-    white-space: pre-wrap; /* Preserves spaces and line breaks */
-    word-wrap: break-word; /* Memastikan teks tidak melampaui batas kolom */
-    overflow-wrap: break-word; /* Memastikan teks tidak melampaui batas kolom */
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
-
-.kpi .cardHeader {
-    justify-content: space-between;
-    align-items: flex-start;
-}
+.kpi .cardHeader { justify-content: space-between; align-items: flex-start; }
 
 .alert > p:nth-child(1),
 .alert > p:nth-child(2),
@@ -575,138 +507,101 @@ body {
     width: 100%;
     padding: 20px;
     display: flex;
-    /* margin-top: 10px; */
 }
-
 .profile .cardProfile {
     position: relative;
     min-height: 500px;
     height: 100vh;
-    width: 100vw;
+    width: 100%;
     background: var(--white);
     padding: 20px;
     box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
     border-radius: 20px;
+    overflow-x: auto;
 }
+.profile .cardHeader { justify-content: space-between; align-items: flex-start; }
+.cardHeader h2 { font-weight: 700; }
+.cardHeader h1 { font-weight: 800; font-size: 2rem; }
+.cardHeader p  { font-size: 15px; margin-left: 180px; }
 
-.profile .cardHeader {
-    justify-content: space-between;
-    align-items: flex-start;
-}
-.cardHeader h2 {
-    font-weight: 600;
-    color: var(--green2);
-}
-.cardHeader h1 {
-    font-family: 'Caveat Brush', cursive;
-    color: var(--green2);
-    font-size: 40px;
-}
-.cardHeader p {
-    font-size: 15px;
-    margin-left: 180px;
-}
+/* ====================== Responsive ========================== */
 
-/* ====================== Responsive Design ========================== */
+/* ── Tablet & Mobile (<=991px) ── */
+/* Di sini .active berarti sidebar TERBUKA (kebalikan desktop) */
 @media (max-width: 991px) {
+    /* Sidebar tersembunyi ke kiri secara default */
     .navigation {
         left: -300px;
+        width: 300px;   /* kembalikan lebar penuh */
     }
+    /* Saat toggle: sidebar muncul */
     .navigation.active {
         width: 300px;
         left: 0;
     }
+    /* Main: full width, tidak bergeser */
     .main {
         width: 100%;
         left: 0;
+        overflow-x: hidden;
     }
+    /* Saat toggle: main sedikit tergeser — dibatasi overflow body */
     .main.active {
         left: 300px;
+        width: 100%;
     }
     .kartuBox {
         grid-template-columns: repeat(2, 1fr);
     }
-    .btn-edit {
-        margin-top: 0px;
-        margin-bottom: 8px;
-    }
-    .btn-hapus {
-        margin-top: 0px;
-    }
-
+    .btn-edit  { margin-top: 0; margin-bottom: 8px; }
+    .btn-hapus { margin-top: 0; }
 }
 
+/* ── Mobile kecil (<=768px) ── */
 @media (max-width: 768px) {
-    .cardProfile .col-md-6 {
-        width: 100%;
-    }
-    .cardProfile form {
-        justify-content: center;
-    }
-    .cardProfile form .col-12 {
-        margin-left: 110px;
-    }
-    .profile {
-        grid-template-columns: 1fr;
-    }
-    .cardProfile {
-        overflow-x: auto;
-    }
-    .cardProfile p {
-        margin-left: 115px;
-    }
+    .cardProfile .col-md-6 { width: 100%; }
+    .cardProfile form { justify-content: center; }
+    .cardProfile form .col-12 { margin-left: 110px; }
+    .profile { grid-template-columns: 1fr; }
+    .cardProfile p { margin-left: 115px; }
 }
 
+/* ── Mobile sangat kecil (<=480px) ── */
 @media (max-width: 480px) {
-    .kartuBox {
-        grid-template-columns: repeat(1, 1fr);
-    }
+    .kartuBox { grid-template-columns: repeat(1, 1fr); }
+
+    /* Sidebar overlay penuh di atas konten — TIDAK menggeser main */
     .navigation {
-        width: 100%;
+        width: 75%;
         left: -100%;
-        z-index: 1000;
     }
     .navigation.active {
-        width: 63%;
+        width: 75%;
         left: 0;
     }
-    .toggle {
-        z-index: 10001;
+    /* Main TIDAK bergeser sama sekali di HP kecil */
+    .main.active {
+        left: 0;
+        width: 100%;
     }
-    .main.active .toggle {
-        color: #fff;
-        position: relative;
-        right: 0;
-        left: initial;
-    }
-    .btn-edit {
-        margin-top: 0px;
-        margin-bottom: 8px;
-    }
-    .btn-hapus {
-        margin-top: 0px;
-    }
-    .table td .description {
-        width: 300px;
-    }
+
+    .toggle { z-index: 10001; }
+    .btn-edit  { margin-top: 0; margin-bottom: 8px; }
+    .btn-hapus { margin-top: 0; }
+
+    .table td .description { width: 300px; }
+
     /* Kalender */
-    .fc-header-toolbar {
-        flex-direction: column; /* Ubah arah menjadi kolom */
-    }
+    .fc-header-toolbar { flex-direction: column; }
     .fc-header-toolbar .fc-toolbar-chunk {
-        flex: none; /* Atur ulang ukuran agar menumpuk secara vertikal */
-    }
-    .fc-header-toolbar .fc-left,
-    .fc-header-toolbar .fc-right {
-        justify-content: space-between; /* Sejajarkan tombol prev, next, dan tampilan */
-    }
-    .fc-header-toolbar .fc-center {
-        margin-top: 10px; /* Beri sedikit jarak antara tombol dan judul */
-    }
-    .fc-header-toolbar .fc-toolbar-chunk {
+        flex: none;
         margin-bottom: 5px;
     }
-    /* Field Entries per pages dan Pencarian tabel */
+    .fc-header-toolbar .fc-left,
+    .fc-header-toolbar .fc-right { justify-content: space-between; }
+    .fc-header-toolbar .fc-center { margin-top: 10px; }
+
+    /* DataTable */
     .dataTable-wrapper .dataTable-top {
         flex-direction: column;
         align-items: flex-start;
@@ -716,20 +611,11 @@ body {
         width: 100%;
         margin-bottom: 10px;
     }
-    .dataTable-wrapper .dataTable-top .dataTable-search input {
-        width: 100%;
-    }
-    .filter {
-        flex-direction: column; /* Mengatur dropdown menjadi vertikal */
-        align-items: center; /* Menyusun dropdown di tengah secara horizontal */
-    }
-    .filter select {
-        width: 100%; /* Agar dropdown mengambil lebar penuh */
-    }
-    .cardProfile p {
-        margin-left: 0;
-    }
-    .cardProfile form .col-12 {
-        margin-left: 0;
-    }
+    .dataTable-wrapper .dataTable-top .dataTable-search input { width: 100%; }
+
+    .filter { flex-direction: column; align-items: center; }
+    .filter select { width: 100%; }
+
+    .cardProfile p { margin-left: 0; }
+    .cardProfile form .col-12 { margin-left: 0; }
 }

@@ -212,7 +212,6 @@ class Tugas(models.Model):
     )
 
     nama_file = models.CharField(max_length=255)
-    file_url = models.TextField()
 
     tgl_upload = models.DateTimeField()
 
